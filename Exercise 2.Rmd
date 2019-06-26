@@ -1,0 +1,305 @@
+---
+output:
+  html_document: default
+  pdf_document: default
+---
+# Chapter 2 Exercise
+***
+## Conceptual
+### Q1 
+#### (a) 
+A flexible statistical learning method will perform **better**. 
+
+Reason: Sample size of traning data is large, meaning that flexible models have potentioal to fit a wider range of possible shapes of f. However, inflexible with limited parameters cannot do this.
+
+#### (b) 
+A flexible statistical learning method will perform **worse**. 
+
+Reason: Using this data set, Curse of Dimensionality will occure, flexible model will tend to be overfitting.
+
+#### (c)
+A flexible statistical learning method will perform **better**. 
+
+Reason: For a highly non-linear relationship, flexible model without limitations of parameters (more degrees of freedom) can find more accurate shape for f. 
+
+#### (d)
+A flexible statistical learning method will perform **worse**. 
+
+Reason: In general, more flexible methodsd have higher variance.
+
+<br />
+<br />
+
+### Q2
+#### (a) 
+Regeression problem. Inference.
+
+n=500, p=profit, number of employees, industry
+
+#### (b) 
+Classification problem. Prediction.
+
+n=20, p=price charged, marketing budget, comp. price, ten other variables
+
+#### (c) 
+Regression problem. Prediction.
+
+n=48, p= change in US market, % change in British market, % change in German market
+
+<br />
+<br />
+
+### Q3
+#### (a)
+
+![Plot](D:/ISLR_hw/Exercise Q3.JPG)
+
+#### (b)
+
+<br />
+<br />
+
+### Q5
+
+Advantages: When we use flexible methods, it can better fit for non-linear model and decrease bais.
+
+Disadvantages: It requires the estimation of many parameters, tends to increase variance and overfit.
+
+When we are interested in prediction, we prefer use flexible methods.
+
+When we are interested in inference, we prefer less flexible methods.
+
+<br />
+<br />
+
+### Q6
+For parametric approachs, we make explicit assuptuions about the functional form of f and we transform the problem of estimating f to estimate a set of parameters. For non-parametric function, there is no assuption about f and it requires a large number of observations to estimate f. 
+
+Advantages: It is easier to estimate parameters rather than fit an function. 
+
+Disadvantages: We don't know the exact form of real f, so sometimes the parametric method we chose may be far from f (underfit or overfit).
+
+<br />
+<br />
+
+### Q7
+#### (a)
+The Euclidean distance between each observation and the test point:
+
+Obs|Distance
+--|--
+1|3
+2|2
+3|$\sqrt{10}$
+4|$\sqrt5$
+5|$\sqrt{2}$
+6|$\sqrt3$
+
+#### (b)
+When K=1, we chose objection 5 as the nearest neighbor, so the prediction is Green.
+
+#### (c)
+When k=3, we chose objection 2,5,6 as the nearest neighbor, so the prediction is Red. 
+
+#### (d)
+When the Bayes boundary is highly non-linear, small value of k would be better. 
+
+The reason is that when k is small,the boundary would be very flexible. When K is large, it tries to fit a linear boundary
+
+<br />
+<br />
+
+## Applied
+#### Q8
+##### (a)
+```{r  echo=TRUE ,fig.width=4,fig.height=3}
+college=read.csv("D:/ISLR_hw/College.csv")
+head(college)
+```
+
+##### (b)
+```{r  echo=TRUE ,fig.width=4,fig.height=3}
+rownames(college)=college[,1]
+fix(college)
+```
+Try 
+```{r  echo=TRUE ,fig.width=4,fig.height=3}
+college=college[,-1]
+fix(college)
+```
+
+##### (c)
+###### i
+```{r  echo=TRUE ,fig.width=4,fig.height=3}
+summary(college)
+```
+###### ii
+```{r  echo=TRUE ,fig.width=10,fig.height=10}
+pairs(college[,1:10])
+```
+
+###### iii
+```{r  echo=TRUE ,fig.width=4,fig.height=3}
+boxplot(Outstate~Private, college)
+```
+###### iv
+```{r  echo=TRUE ,fig.width=4,fig.height=3}
+Elite=rep('No',nrow(college))
+Elite[college$Top10perc>50]='Yes'
+Elite=as.factor(Elite)
+college=data.frame(college,Elite)
+
+summary(college$Elite)
+boxplot(Outstate~Elite,college)
+```
+
+###### v
+```{r  echo=TRUE ,fig.width=8,fig.height=8}
+par(mfrow=c(2,2))
+hist(college$Apps)
+hist(college$Accept)
+hist(college$Enroll)
+hist(college$PhD)
+```
+
+###### vi
+```{r echo=TRUE ,fig.width=8,fig.height=8}
+library(dplyr)
+phd_private=mean(filter(college,Private=='Yes')$PhD)
+phd_pubilc=mean(filter(college,Private=='No')$PhD)
+```
+In average, public universities has more PhD stduets, meaning that they are more focued on research.
+
+```{r echo=TRUE ,fig.width=8,fig.height=8}
+college_1=mutate(college,Accept_rate=Accept/Apps)
+Accept_elite=mean(filter(college_1,Elite=='Yes')$Accept_rate)
+Accept_nonelite=mean(filter(college_1,Elite=='No')$Accept_rate)
+```
+In average, elite universities has lower acceptance rare than non-elite ones.
+
+<br />
+<br />
+
+#### Q9
+remove missing value from the data
+```{r  echo=TRUE ,fig.width=8,fig.height=8}
+auto=read.csv("D:/ISLR_hw/Auto.csv", na.strings="?")
+auto=na.omit(auto)
+```
+
+##### (a)
+```{r  echo=TRUE ,fig.width=8,fig.height=8}
+head(auto)
+```
+We can see that mpg, cylinders, displacement, horsepower, weight, year and acceleration are quantitative, origin and name are qualitative.
+
+##### (b)
+```{r  echo=TRUE ,fig.width=8,fig.height=8}
+apply(auto,2,range)
+#sapply(auto[,1:7],range)
+```
+
+##### (c)
+```{r  echo=TRUE ,fig.width=8,fig.height=8}
+sapply(auto[, 1:7], mean)
+
+sapply(auto[, 1:7], sd)
+```
+
+##### (d)
+```{r  echo=TRUE ,fig.width=8,fig.height=8}
+auto_new=auto[-(10:85),]
+  #Auto[-(10:85),]
+
+apply(auto_new,2,range)
+
+sapply(auto_new[, 1:7], mean)
+
+sapply(auto_new[, 1:7], sd)
+```
+
+##### (e)
+```{r  echo=TRUE ,fig.width=4,fig.height=4}
+library(ggplot2)
+#library(GGally)
+pairs(auto)
+
+ggplot(auto,aes(weight,displacement))+geom_point()+geom_smooth()
+```
+Here we can see that the displacemnet and weights are postively correlated.
+
+##### (f)
+From the plots in (e), we can see almost all predictors are correlated with mpg except name.
+
+<br />
+<br />
+
+#### Q10
+##### (a)
+```{r  echo=TRUE ,fig.width=8,fig.height=8}
+library(MASS)
+head(Boston)
+?Boston
+```
+There are 506 rows and 14 columns.
+
+Each row reprensents an housing with their attributes. Each column represents a set of one attributes of a housing.
+
+##### (b)
+```{r  echo=TRUE ,fig.width=4,fig.height=4}
+pairs(Boston)
+ggplot(Boston,aes(rad,crim))+geom_point()
+```
+
+It can be seen that Higher index of accessibility to radial highways, more crime.
+
+
+##### (c)
+Use conclusion in (b).
+
+##### (d)
+```{r  echo=TRUE ,fig.width=5,fig.height=3}
+hist(Boston[Boston$crim>1,]$crim, breaks=25)
+hist(Boston$tax, breaks=25)
+hist(Boston$ptratio, breaks=25)
+```
+For crime rate, most towns have low crime rates, but there are tails: some suburbs have crime rates over 20, reaching above 80.
+
+For tax, there is a big gap between low taxes towns and hign taxes towns, and the peak is around.
+
+For pupil-teacher ratio, there is a skew.
+
+
+##### (e)
+```{r  echo=TRUE ,fig.width=8,fig.height=8}
+nrow(Boston[Boston$chas==1,])
+```
+There are 35 suburbs bound the Charles river.
+
+##### (f)
+```{r  echo=TRUE ,fig.width=8,fig.height=8}
+median(Boston['ptratio'][,1])
+```
+median is 19.05
+
+##### (g)
+```{r  echo=TRUE ,fig.width=8,fig.height=8}
+subset(Boston,medv==min(Boston$medv))
+```
+The 399th and 406th suburb has lowest median value of owner-occupies homes. (We can use quantitles of the above values to compare)
+
+##### (h)
+```{r  echo=TRUE ,fig.width=8,fig.height=8}
+dim(subset(Boston,rm>7))[1]
+dim(subset(Boston,rm>8))[1]
+```
+There are 64 suburbs avarage more than 7 rooms, 13 suburbs more than 8 rooms.
+
+```{r  echo=TRUE ,fig.width=8,fig.height=8}
+summary(subset(Boston,rm>8))
+summary(Boston)
+
+#Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
+```
+More rm, lower crime
+
