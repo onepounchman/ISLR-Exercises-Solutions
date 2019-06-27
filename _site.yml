@@ -1,9 +1,9 @@
-name: "wenbo-website"
+name: "nicks-website"
 output_dir: "."
 navbar:
-  title: "wenbo Website"
+  title: "Nicks Website"
   left:
-    - text: "Exercise 2"
-      href: Exercise 2.html
+    - text: "Home"
+      href: index.html
     - text: "About Me"
       href: about.html
