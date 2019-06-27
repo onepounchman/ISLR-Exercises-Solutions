@@ -1,0 +1,9 @@
+name: "wenbo-website"
+output_dir: "."
+navbar:
+  title: "wenbo Website"
+  left:
+    - text: "Exercise 2"
+      href: Exercise 2.html
+    - text: "About Me"
+      href: about.html
