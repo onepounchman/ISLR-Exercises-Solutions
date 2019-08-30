@@ -1,5 +1,0 @@
----
-title: "Nick's Website"
----
-
-Hello, World!
