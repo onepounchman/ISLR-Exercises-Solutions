@@ -7,6 +7,7 @@
 <meta charset="utf-8" />
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
 
 
 <meta name="author" content="wenbo" />
@@ -255,9 +256,7 @@ h6 {
 </style>
 
 
-</head>
 
-<body>
 
 <style type="text/css">
 .main-container {
@@ -288,8 +287,6 @@ summary {
 </style>
 
 
-
-<div class="container-fluid main-container">
 
 <!-- tabsets -->
 
@@ -347,20 +344,17 @@ summary {
 }
 </style>
 
-<script>
-$(document).ready(function () {
-  window.buildTabsets("TOC");
-});
-
-$(document).ready(function () {
-  $('.tabset-dropdown > .nav-tabs > li').click(function () {
-    $(this).parent().toggleClass('nav-tabs-open')
-  });
-});
-</script>
-
 <!-- code folding -->
 
+
+
+
+</head>
+
+<body>
+
+
+<div class="container-fluid main-container">
 
 
 
@@ -370,8 +364,7 @@ $(document).ready(function () {
 
 
 <h1 class="title toc-ignore">Exercise 5</h1>
-<h4 class="author"><em>wenbo</em></h4>
-<h4 class="date"><em>2019年7月28日</em></h4>
+<h4 class="author">wenbo</h4>
 
 </div>
 
@@ -445,7 +438,7 @@ for(i in 1:10000){
   store[i]=sum(sample(1:100,rep=TRUE)==4)&gt;0
 }
 mean(store)</code></pre>
-<pre><code>## [1] 0.6386</code></pre>
+<pre><code>## [1] 0.6269</code></pre>
 <p>Almost 63% bootstrap dataset contain 4-th observation and this numerical result is close to the theoretical probability we obtained in (g).</p>
 </div>
 </div>
@@ -480,9 +473,8 @@ mean(store)</code></pre>
 <h3>Q5</h3>
 <div id="a-2" class="section level4">
 <h4>(a)</h4>
-<pre class="r"><code>library(ISLR)</code></pre>
-<pre><code>## Warning: package 'ISLR' was built under R version 3.5.3</code></pre>
-<pre class="r"><code>glm.fit=glm(default~income+balance,data=Default,family=binomial)</code></pre>
+<pre class="r"><code>library(ISLR)
+glm.fit=glm(default~income+balance,data=Default,family=binomial)</code></pre>
 </div>
 <div id="b-2" class="section level4">
 <h4>(b)</h4>
@@ -493,7 +485,7 @@ prob1=predict(glm.fit1,Default[-train,],type='response')
 class1=rep('No',length(prob1))
 class1[prob1&gt;0.5]='Yes'
 mean(class1==Default$default[-train])</code></pre>
-<pre><code>## [1] 0.9714</code></pre>
+<pre><code>## [1] 0.9746</code></pre>
 <p>Test error is about 0.03.</p>
 </div>
 <div id="c-1" class="section level4">
@@ -519,7 +511,7 @@ prob1=predict(glm.fit1,Default[-train,],type='response')
 class1=rep('No',length(prob1))
 class1[prob1&gt;0.5]='Yes'
 mean(class1==Default$default[-train])</code></pre>
-<pre><code>## [1] 0.9712</code></pre>
+<pre><code>## [1] 0.974</code></pre>
 <p>Adding dummy variable for studentswill not lead to a reduction in the test error.</p>
 </div>
 </div>
@@ -576,9 +568,9 @@ boot(Default,boot.fn,100)</code></pre>
 ## 
 ## Bootstrap Statistics :
 ##          original        bias     std. error
-## t1* -1.154047e+01  9.699111e-02 4.101121e-01
-## t2*  2.080898e-05  6.715005e-08 4.127740e-06
-## t3*  5.647103e-03 -5.733883e-05 2.105660e-04</code></pre>
+## t1* -1.154047e+01  8.556378e-03 4.122015e-01
+## t2*  2.080898e-05 -3.993598e-07 4.186088e-06
+## t3*  5.647103e-03 -4.116657e-06 2.226242e-04</code></pre>
 <p>Standard errors for income and balance are 4.128e-06 and 2.106e-04.</p>
 </div>
 <div id="d-2" class="section level4">
@@ -677,13 +669,13 @@ for(i in 1:4){
   }
   error2[i]=result
 }</code></pre>
-<pre><code>## Warning in error2[i] &lt;- result: 被替换的项目不是替换值长度的倍数
+<pre><code>## Warning in error2[i] &lt;- result: 琚浛鎹㈢殑椤圭洰涓嶆槸鏇挎崲鍊奸暱搴︾殑鍊嶆暟
 
-## Warning in error2[i] &lt;- result: 被替换的项目不是替换值长度的倍数
+## Warning in error2[i] &lt;- result: 琚浛鎹㈢殑椤圭洰涓嶆槸鏇挎崲鍊奸暱搴︾殑鍊嶆暟
 
-## Warning in error2[i] &lt;- result: 被替换的项目不是替换值长度的倍数
+## Warning in error2[i] &lt;- result: 琚浛鎹㈢殑椤圭洰涓嶆槸鏇挎崲鍊奸暱搴︾殑鍊嶆暟
 
-## Warning in error2[i] &lt;- result: 被替换的项目不是替换值长度的倍数</code></pre>
+## Warning in error2[i] &lt;- result: 琚浛鎹㈢殑椤圭洰涓嶆槸鏇挎崲鍊奸暱搴︾殑鍊嶆暟</code></pre>
 <pre class="r"><code>error2</code></pre>
 <pre><code>## [1]  74.40974 518.92721 517.57673 521.87891</code></pre>
 <p>Same as (c) because the random seed has no inflences on the samples in temrs of LOOCV.</p>
@@ -750,7 +742,7 @@ boot(Boston,mu,100)</code></pre>
 ## 
 ## Bootstrap Statistics :
 ##     original      bias    std. error
-## t1* 22.53281 -0.02547036   0.4288362</code></pre>
+## t1* 22.53281 -0.05943281   0.3972639</code></pre>
 <p>The two results are very close.</p>
 </div>
 <div id="d-5" class="section level4">
@@ -792,7 +784,7 @@ boot(Boston,mu,100)</code></pre>
 ## 
 ## Bootstrap Statistics :
 ##     original  bias    std. error
-## t1*     21.2   -0.07   0.3500361</code></pre>
+## t1*     21.2  0.0195   0.3888532</code></pre>
 </div>
 <div id="g-1" class="section level4">
 <h4>(g)</h4>
@@ -816,7 +808,7 @@ boot(Boston,mu,100)</code></pre>
 ## 
 ## Bootstrap Statistics :
 ##     original  bias    std. error
-## t1*    12.75  -0.103   0.5058656</code></pre>
+## t1*    12.75   0.038   0.4519945</code></pre>
 </div>
 </div>
 </div>
@@ -838,6 +830,23 @@ $(document).ready(function () {
 
 
 </script>
+
+<!-- tabsets -->
+
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+
+$(document).ready(function () {
+  $('.tabset-dropdown > .nav-tabs > li').click(function () {
+    $(this).parent().toggleClass('nav-tabs-open')
+  });
+});
+</script>
+
+<!-- code folding -->
+
 
 <!-- dynamically load mathjax for compatibility with self-contained -->
 <script>
