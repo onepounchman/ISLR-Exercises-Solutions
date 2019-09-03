@@ -1,0 +1,466 @@
+---
+title: "Exercise 7"
+author: "wenbo"
+output: html_document
+---
+
+***
+## Conceptual
+***
+
+
+
+>Q1 
+
+### (a)
+$a_1=\beta_0,b_1=\beta_1,c_1=\beta_2,d_1=\beta_4$
+
+### (b)
+$a_2=\beta_0-\beta_4\xi^3,b_2=\beta_1+3\beta_4\xi^2,c_2=\beta_2-3\beta_4\xi,d_2=\beta_3+\beta_4$
+
+### (c)
+$$
+\begin{aligned}
+f_2(\xi)&=\beta_0-\beta_4\xi^3+\beta_1\xi+3\beta_4\xi^3+\beta_2\xi^2-3\beta_4\xi^3+\beta_3\xi^3+\beta_4\xi^3\\
+&=\beta_0+\beta_1\xi+\beta_2\xi^2+\beta_3\xi^3=f_1(\xi)\\
+\end{aligned}
+$$
+
+### (d)
+$$
+\begin{aligned}
+f^\prime_2(x)&=\beta_1+3\beta_4\xi^2+(2\beta_2-6\beta_4\xi)x+(3\beta_4+3\beta_3)x^2\\
+f^\prime_1(x)&=\beta_1+2\beta_2x+3\beta_3x^2
+\end{aligned}\\
+\begin{aligned}
+\rightarrow f^\prime_2(\xi)&=\beta_1+3\beta_4\xi^2+2\beta_2\xi-6\beta_4\xi^2+3\beta_4\xi^2+3\beta_3\xi^2\\
+&=\beta_1+2\beta_2\xi+3\beta_3\xi^2=f^\prime_1(\xi)
+\end{aligned}
+$$
+
+### (e)
+$$
+\begin{aligned}
+f^{\prime\prime}_2(x)&=2\beta_2-6\beta_4\xi+(6\beta_4+6\beta_3)x\\
+f^{\prime\prime}_1(x)&=2\beta_2+6\beta_3x
+\end{aligned}\\
+\begin{aligned}
+\rightarrow f^{\prime\prime}_2(x)&=2\beta_2-6\beta_4\xi+6\beta_4\xi+6\beta_3\xi\\
+&=2\beta_2+6\beta_3\xi=f^{\prime\prime}_1(x)
+\end{aligned}
+$$
+
+>Q2
+
+### (a)
+When $\lambda$ is very large, the first term can be ignored. So when $g^{{0}}=g=0$, we can optimize the equation.
+
+### (b)
+When $\lambda$ is very large, $g^{(1)}=0$ means that $g$ is a constant function.
+
+### (c)
+When $\lambda$ is very large, $g^{(2)}=0$ means that $g$ is a linear function.
+
+### (d)
+When $\lambda$ is very large, $g^{(1)}=0$ means that $g$ is a quadratic function.
+
+### (e)
+When $\lambda$ is very l0, the second term can be ignored and $g$ is the optimail solution of the least squares. It is obvious that g is a steo function which across every point.
+
+>Q3
+
+```{r echo=TRUE ,fig.width=8,fig.height=8}
+x1=seq(-2,1,0.01)
+y1=1+x1
+plot(x1,y1,xlim=c(-2,2),ylim=c(-5,5))
+x2=seq(1,2,0.01)
+y2=1+x2-2*(x2-1)^2
+points(x2,y2)
+```
+One knot at 1.
+
+>Q4
+
+```{r echo=TRUE ,fig.width=8,fig.height=8}
+x1=seq(-2,0,0.01)
+y1=rep(1,length(x1))
+plot(x1,y1,xlim=c(-2,2),ylim=c(-3,3))
+x2=seq(0,1,0.01)
+y2=rep(2,length(x2))
+points(x2,y2)
+x3=seq(1,2,0.01)
+y3=3-x3
+points(x3,y3)
+
+#Another way to plot using ggplot
+# x.1 <- seq(-6, 0, 0.1)  # [-6,0)
+# x.2 <- seq(0, 1, 0.1)   # [0,1)
+# x.3 <- seq(1, 2, 0.1)   # [1,2]
+# x.4 <- seq(2, 3, 0.1)   # (2,3)
+# x.5 <- seq(3, 4, 0.1)   # [3,4]
+# x.6 <- seq(4, 5, 0.1)   # (4,5]
+# x.7 <- seq(5, 6, 0.1)   # (5,6)
+# y.1 <- rep(1, length(x.1)) 
+# y.2 <- rep(2, length(x.2))
+# y.3 <- 3 - x.3
+# y.4 <- rep(1, length(x.4))
+# y.5 <- 3*x.5 - 8
+# y.6 <- rep(4, length(x.6))
+# y.7 <- rep(1, length(x.7))
+# df <- data.frame(X = c(x.1,x.2,x.3,x.4,x.5,x.6,x.7),
+#                  Y = c(y.1,y.2,y.3,y.4,y.5,y.6,y.7))
+# p <- ggplot(df, aes(x=X,y=Y)) + geom_line(size=1.5)
+# rect <- data.frame(xmin=-2, xmax=2, ymin=-Inf, ymax=Inf)
+# p + geom_rect(data=rect, aes(xmin=xmin, xmax=xmax, ymin=ymin, ymax=ymax),
+#               fill="grey20",
+#               alpha=0.4,
+#               inherit.aes = FALSE)
+```
+Two knots at 0 and 1
+
+>Q5
+
+### (a)
+$\hat g_2$. Since $g^{(3)}$ is more strict than $g^{(4)}$ in terms of smmothness, $\hat g_2$ is more flexible and can fit better in the training data.
+
+### (b)
+It depends on the form of real y.
+
+### (c)
+Same results.
+
+***
+## Applied
+***
+
+>Q6
+
+### (a)
+```{r echo=TRUE ,fig.width=8,fig.height=8}
+library(ISLR)
+library(boot)
+set.seed(1)
+cv.error.10=rep(0,10)
+for(i in 1:10){
+poly.fit=glm(wage~poly(age,i),data=Wage)
+cv.error.10[i]=cv.glm(Wage,poly.fit,K=10)$delta[1]
+}
+degree=which.min(cv.error.10)
+poly.fit=lm(wage~poly(age,degree),data=Wage)
+fit.1=lm(wage~poly(age,1),data=Wage)
+fit.2=lm(wage~poly(age,2),data=Wage)
+fit.3=lm(wage~poly(age,3),data=Wage)
+fit.5=lm(wage~poly(age,5),data=Wage)
+anova(fit.1,fit.2,fit.3,poly.fit,fit.5)
+
+
+
+lim=range(Wage$age)
+grid=seq(lim[1],lim[2])
+preds=predict(poly.fit,newdata=list(age=grid),se=TRUE)
+plot(Wage$age,Wage$wage)
+lines(grid,preds$fit,lwd=2,col='red',xlim=lim)
+```
+Degree 4 is chosen.
+
+### (b)
+```{r echo=TRUE ,fig.width=8,fig.height=8}
+set.seed(1)
+cv.error.10=rep(0,10)
+
+for(i in 1:10){
+  #Cut data first
+ Wage$age.cut <- cut(Wage$age,i+1)
+ glm.fit <- glm(wage~age.cut, data=Wage)
+  cv.error.10[i] <- cv.glm(Wage, glm.fit, K=10)$delta[1]
+#step.fit=glm(wage~cut(age,i+1),data=Wage)    
+#cv.error.10[i]=cv.glm(Wage,step.fit,K=10)$delta[1]
+}
+number=which.min(cv.error.10)
+
+plot(2:11,cv.error.10,type='b')
+
+
+step.fit=glm(wage~cut(age,8),data=Wage)
+preds=predict(step.fit,newdata=list(age=grid),se=TRUE)
+se.bands=preds$fit + cbind(2*preds$se.fit, -2*preds$se.fit)
+plot(Wage$age,Wage$wage)
+lines(grid, preds$fit, lwd=2, col="blue")
+matlines(grid, se.bands, lwd=1, col="blue", lty=3)
+```
+The number of optimal cuts is 8.
+
+
+>Q7
+
+```{r echo=TRUE ,fig.width=8,fig.height=8}
+par(mfrow=c(2,1))
+plot(Wage$maritl,Wage$wage)
+plot(Wage$jobclass,Wage$wage)
+```
+Both maritl and jobclass are categorical data. For jobclass, jobclass=information seems provids more salary than industrial. For maritl, married people seem to obtain the highest wages.
+```{r echo=TRUE ,fig.width=8,fig.height=8}
+library(gam)
+gam.fit1 <- gam(wage~ns(age,4), data=Wage)
+gam.fit2.1 <- gam(wage~ns(age,4)+maritl, data=Wage)
+gam.fit2.2 <- gam(wage~ns(age,)+jobclass, data=Wage)
+gam.fit3 <- gam(wage~ns(age,4)+maritl+jobclass, data=Wage)
+anova(gam.fit1, gam.fit2.1, gam.fit3)
+```
+```{r echo=TRUE ,fig.width=8,fig.height=8}
+par(mfrow=c(1,3))
+plot(gam.fit3, se=TRUE, col="blue")
+```
+
+>Q8
+
+```{r echo=TRUE ,fig.width=8,fig.height=8}
+pairs(Auto)
+```
+It can be seen that 'displacement`, `horsepower`, `weight`, `acceleration` may have nonlinear relationships.
+```{r echo=TRUE ,fig.width=8,fig.height=8}
+gam.fit=gam(mpg~s(displacement,4)+s(horsepower,5)+year+cylinders,data=Auto)
+par(mfrow=c(1,4))
+plot(gam.fit, se=TRUE, col="blue")
+```
+
+
+>Q9
+
+### (a)
+```{r echo=TRUE ,fig.width=8,fig.height=8}
+library(MASS)
+fit=lm(nox~poly(dis,3),Boston)
+summary(fit)
+
+lim=range(Boston$dis)
+grid=seq(lim[1],lim[2],0.1)
+preds=predict(fit,newdata=list(dis=grid),se=TRUE)
+se.bands <- preds$fit + cbind(2*preds$se.fit, -2*preds$se.fit)
+plot(Boston$dis,Boston$nox)
+lines(grid,preds$fit,lwd=2,col='red',xlim=lim)
+matlines(grid,se.bands,col='red')
+```
+Intercept is 0.554695, parameters for i-th degree of dis are -2.003096,0.856330 and -0.318049 for i=1,2,3.
+
+### (b)
+```{r echo=TRUE ,fig.width=8,fig.height=8}
+error=rep(0,10)
+for(i in 1:10){
+fit=lm(nox~poly(dis,i),Boston)
+preds=predict(fit,Boston)
+error[i]=sum((preds-Boston$nox)^2)  #or fit$residuals^2
+}
+error
+```
+
+### (c)
+```{r echo=TRUE ,fig.width=8,fig.height=8}
+set.seed(1)
+cv.error.10=rep(0,10)
+for(i in 1:10){
+poly.fit=glm(nox~poly(dis,i),data=Boston)
+cv.error.10[i]=cv.glm(Boston,poly.fit,K=10)$delta[1]
+}
+which.min(cv.error.10)
+```
+Chose degree 4.
+
+### (d)
+```{r echo=TRUE ,fig.width=8,fig.height=8}
+library(splines)
+fit=lm(nox~bs(dis,df=4),data=Boston)
+attr(bs(Boston$dis,df=4),'knots')
+pred=predict(fit,newdata=list(dis=grid))
+plot(Boston$dis,Boston$nox)
+lines(grid,pred,lwd=2,col='red')
+```
+
+### (e)
+```{r echo=TRUE ,fig.width=8,fig.height=8}
+par(mfrow=c(2,3))
+error=rep(0,9)
+for(i in 3:11){
+fit=lm(nox~bs(dis,df=i),data=Boston)
+attr(bs(Boston$dis,df=i),'knots')
+pred=predict(fit,newdata=list(dis=grid))
+plot(Boston$dis,Boston$nox)
+lines(grid,pred,lwd=2,col='red')
+error[i-2]=sum(fit$residuals^2)
+}
+which.min(error)
+```
+
+When degree freedom is 10, we can obtain the smallest RSS.
+
+### (f)
+```{r echo=TRUE ,fig.width=8,fig.height=8}
+set.seed(1)
+cv.error.10=rep(0,7)
+for(i in 4:10){
+poly.fit=glm(nox~bs(dis,df=i),data=Boston)
+cv.error.10[i-3]=cv.glm(Boston,poly.fit,K=10)$delta[1]
+}
+which.min(cv.error.10)
+```
+Using cross-validation, degree freedom should be 10.
+
+>Q10
+
+### (a)
+```{r echo=TRUE ,fig.width=8,fig.height=8}
+library(leaps)
+train_index=sample(nrow(College),7*nrow(College)/10)
+train=College[train_index,]
+test=College[-train_index,]
+
+predict.regsubsets <- function(object, newdata, id, ...){
+  form <- as.formula(object$call[[2]])
+  mat <- model.matrix(form, newdata)
+  coefi <- coef(object, id=id)
+  xvars <- names(coefi)
+  mat[,xvars]%*%coefi
+}
+
+# forward selection
+reg.fwd=regsubsets(Outstate~.,data=train,method='forward',nvmax=17)
+regsum=summary(reg.fwd)
+
+err.fwd <- rep(0, ncol(College)-1)
+for(i in 1:(ncol(College)-1)) {
+  pred.fwd <- predict(reg.fwd, test, id=i)
+  err.fwd[i] <- mean((test$Outstate - pred.fwd)^2)
+}
+
+par(mfrow=c(1,2))
+plot(err.fwd,main="Test MSE", xlab="Number of Predictors")
+min.mse <- which.min(err.fwd)  
+points(min.mse, err.fwd[min.mse], col="red", pch=4, lwd=5)
+plot(regsum$adjr2, type="b", main="Adjusted R^2", xlab="Number of Predictors")
+max.adjr2 <- which.max(regsum$adjr2)  
+points(max.adjr2, regsum$adjr2[max.adjr2], col="red", pch=4, lwd=5)
+```
+
+### (b)
+```{r echo=TRUE ,fig.width=8,fig.height=8}
+gam.fit <- gam(Outstate ~ 
+                 Private +   
+                 s(Room.Board,3) + 
+                 s(Terminal,3) + 
+                 s(perc.alumni,3) +
+               s(Expend,3) + 
+                 s(Grad.Rate,3), 
+               data=College)
+par(mfrow=c(2,3))
+plot(gam.fit, se=TRUE, col="blue")
+```
+### (c)
+```{r echo=TRUE ,fig.width=8,fig.height=8}
+pred <- predict(gam.fit, test)
+(mse.error <- mean((test$Outstate - pred)^2))
+err.fwd[6]
+```
+### (d)
+```{r echo=TRUE ,fig.width=8,fig.height=8}
+summary(gam.fit)
+```
+Anova for Parametric Effects measures linear relationships and Anova for Nonparametric Effects measures nonlinear relationships.
+
+Strong evidence of non-linear effects for Expend, some evidence for Room.Board, Terminal and Grad.Rate, and no evidence for perc.alumni.
+
+>Q11
+
+### (a)
+```{r echo=TRUE ,fig.width=8,fig.height=8}
+epi=rnorm(100)
+x1=rnorm(100)
+x2=rnorm(100)
+y=1+2*x1+3*x2+epi
+```
+
+### (b)
+let $\beta_1$ equals 5.
+
+### (c)
+```{r echo=TRUE ,fig.width=8,fig.height=8}
+beta1=5
+a=y-beta1*x1
+beta2=lm(a~x2)$coef[2]
+```
+
+### (d)
+```{r echo=TRUE ,fig.width=8,fig.height=8}
+beta1=5
+a=y-beta2*x2
+beta1=lm(a~x1)$coef[2]
+```
+
+### (e)
+```{r echo=TRUE ,fig.width=8,fig.height=8}
+beta1=6
+beta_0=rep(0,1000)
+beta_1=rep(0,1000)
+beta_2=rep(0,1000)
+for(i in 1:1000){
+  a=y-beta1*x1
+  beta2=lm(a~x2)$coef[2]
+  a=y-beta2*x2
+  beta1=lm(a~x1)$coef[2]
+  
+  beta_0[i]=lm(a~x1)$coef[1]
+  beta_1[i]=beta1
+  beta_2[i]=beta2
+}
+x=seq(1000)
+par(mfrow=c(3,1))
+plot(x,beta_0,ylim=c(0,7))
+plot(x,beta_1,col='red',ylim=c(0,7))
+plot(x,beta_2,col='blue',ylim=c(0,7))
+```
+
+### (f)
+```{r echo=TRUE ,fig.width=8,fig.height=8}
+fit.lm=lm(y~x1+x2)
+summary(fit)
+
+par(mfrow=c(3,1))
+plot(x,beta_0,ylim=c(0,7))
+abline(h=coef(fit.lm)[1], lty="dashed", lwd=3, col="brown")
+plot(x,beta_1,col='red',ylim=c(0,7))
+abline(h=coef(fit.lm)[2], lty="dashed", lwd=3, col="darkgreen")
+plot(x,beta_2,col='blue',ylim=c(0,7))
+abline(h=coef(fit.lm)[3], lty="dashed", lwd=3, col="darkblue")
+```
+
+### (g)
+In this dataset, three iterations are enough.
+
+>Q12
+
+```{r echo=TRUE ,fig.width=8,fig.height=8}
+n=100
+p=100
+data=matrix(rnorm(n*p), ncol=p, nrow=n)
+set.seed(1)
+y=rep(0,100)
+for( i in 1:100){
+  data[,i]=rnorm(100)
+  y=y+i*data[,i]
+}
+y=y+epi
+data=data.frame(data)
+mse.error <- rep(0, 2000)
+beta=data.frame(sample(100))
+##Backfitting
+for(i in 1:2000){
+  for(j in 1:100){
+    a=y-as.matrix(data[,-(100-j+1)])%*%as.matrix(beta[-(100-j+1),])
+    beta_in=lm(a~data[,100-j+1])$coef[2]
+    beta[100-j+1,]=beta_in
+  }
+  mse.error[i] <- mean((y - as.matrix(data)%*%as.matrix(beta))^2)
+}
+plot(900:1000,mse.error[900:1000])
+```
+
+Over 2000 iterations.

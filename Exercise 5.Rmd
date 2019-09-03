@@ -1,0 +1,335 @@
+---
+title: "Exercise 5"
+author: "wenbo"
+output: html_document
+---
+
+
+***
+## Conceptual
+***
+
+### Q1 
+$$
+\begin{aligned}
+Var(\alpha X+(1-\alpha)Y)&=\alpha^2 Var(X)+(1-\alpha)^2Var(Y)+2\sigma_{\alpha X(1-\alpha)Y}\\
+&=\alpha^2 \sigma_X^2+(1-\alpha)^2\sigma_Y^2+2\alpha(1-\alpha)\sigma_{XY} \\
+&=\alpha^2(\sigma_X^2+\sigma_Y^2-2\sigma_{XY})-\alpha(2\sigma_{XY}-2\sigma_Y^2)+\sigma_Y^2
+\end{aligned}
+$$
+It can be seen that this is an quadratic equation of $\alpha$ and it can achieve one minimum value when $\alpha=\frac{-b}{2a}=\frac{\sigma_Y^2-\sigma_{XY}}{\sigma_X^2+\sigma_Y^2-2\sigma_{XY}}$
+
+### Q2
+
+#### (a)
+$$
+P=\frac{n-1}{n}
+$$
+
+#### (b)
+$$
+P=\frac{n-1}{n}
+$$
+
+#### (c)
+since the we have calculated the probability that the  i-th (i can be any number from 1 to n) bootstrap ovservation is not the j-th observation form original sample is $P=\frac{n-1}{n}$, we can do a multiply:
+$$
+P=\frac{n-1}{n}\frac{n-1}{n}...\frac{n-1}{n}=(\frac{n-1}{n})^n
+$$
+
+#### (d)
+$$
+p=1-(\frac{5-1}{5})^5\approx 0.67
+$$
+
+#### (e)
+$$
+p=1-(\frac{100-1}{100})^100\approx 0.63
+$$
+
+#### (f)
+$$
+p=1-(\frac{10000-1}{10000})^10000\approx 0.63
+$$
+
+#### (g)
+```{r echo=TRUE ,fig.width=8,fig.height=8}
+x=1:100000
+y=rep(0,100000)
+for(i in 1:100000){
+  y[i]=1-((i-1)/i)^i
+}
+plot(x,y)
+```
+When n become larger, the probability will converge.
+
+#### (h)
+```{r echo=TRUE ,fig.width=8,fig.height=8}
+store=rep(NA,10000)
+for(i in 1:10000){
+  store[i]=sum(sample(1:100,rep=TRUE)==4)>0
+}
+mean(store)
+```
+Almost 63% bootstrap dataset contain 4-th observation and this numerical result is close to the theoretical probability we obtained in (g).
+
+### Q3
+
+#### (a)
+First, we can shuffle the whole dataset, then we split it into 10 folds. Each time, we use one 9 folds as training dataset and the remaining one as validation set. We can repeat this process 10 times and obtain 10 results. Finally, average them.
+
+#### (b)
+
+##### i
+advantage:Less bias \\
+disadvantage: More computational cost
+
+##### ii
+advantage: Computational advantage, less variance and more accurate estimate.
+disadvantage: More bias.
+
+### Q4
+We can use bootstrap to estimate the standard deviationof prediction.
+
+***
+## Applied
+***
+
+### Q5
+#### (a)
+```{r echo=TRUE ,fig.width=8,fig.height=8}
+library(ISLR)
+glm.fit=glm(default~income+balance,data=Default,family=binomial)
+```
+
+#### (b)
+```{r echo=TRUE ,fig.width=8,fig.height=8}
+set.seed(1)
+train=sample(dim(Default)[1],round(dim(Default)[1]/2),replace=FALSE)
+glm.fit1=glm(default~balance+income,data=Default,subset=train,family=binomial)
+prob1=predict(glm.fit1,Default[-train,],type='response')
+class1=rep('No',length(prob1))
+class1[prob1>0.5]='Yes'
+mean(class1==Default$default[-train])
+```
+Test error is about 0.03.
+
+#### (c)
+```{r echo=TRUE ,fig.width=8,fig.height=8}
+result=rep(0,3)
+for (i in 2:4){
+  set.seed(i)  
+  train=sample(dim(Default)[1],round(dim(Default)[1]/2),replace=FALSE)
+  glm.fit1=glm(default~balance+income,data=Default,subset=train,family=binomial)
+  prob1=predict(glm.fit1,Default[-train,],type='response')
+  class1=rep('No',length(prob1))
+  class1[prob1>0.5]='Yes'
+  result[i-1]=mean(class1==Default$default[-train])
+}
+```
+All the prediction accuracies are close to 97%.
+
+#### (d)
+```{r echo=TRUE ,fig.width=8,fig.height=8}
+set.seed(1)
+train=sample(dim(Default)[1],round(dim(Default)[1]/2),replace=FALSE)
+glm.fit1=glm(default~balance+income+student,data=Default,subset=train,family=binomial)
+prob1=predict(glm.fit1,Default[-train,],type='response')
+class1=rep('No',length(prob1))
+class1[prob1>0.5]='Yes'
+mean(class1==Default$default[-train])
+```
+Adding dummy variable for studentswill not lead to a reduction in the test error.
+
+### Q6
+#### (a)
+```{r echo=TRUE ,fig.width=8,fig.height=8}
+glm.fit=glm(default~income+balance,data=Default,family=binomial)
+summary(glm.fit)
+```
+Standard errors for income and balance are 4.985e-06 and 2.274e-04.
+
+#### (b)
+```{r echo=TRUE ,fig.width=8,fig.height=8}
+boot.fn<-function(data,index){
+  return(coef(glm(default~income+balance,data=data,subset=index,family=binomial)))
+}
+```
+
+#### (c)
+```{r echo=TRUE ,fig.width=8,fig.height=8}
+library(boot)
+set.seed(1)
+boot(Default,boot.fn,100)
+```
+Standard errors for income and balance are 4.128e-06 and 2.106e-04.
+
+#### (d)
+It can be seen that bootstrap method could provide similar results with standard formula.
+
+### Q7
+#### (a)
+```{r echo=TRUE ,fig.width=8,fig.height=8}
+glm.fit1=glm(Direction~Lag1+Lag2,data=Weekly,family=binomial)
+```
+
+#### (b)
+```{r echo=TRUE ,fig.width=8,fig.height=8}
+glm.fit2=glm(Direction~Lag1+Lag2,data=Weekly[-1,],family=binomial)
+```
+
+#### (c)
+```{r echo=TRUE ,fig.width=8,fig.height=8}
+prob=predict(glm.fit2,Weekly[1,],type='response')
+predict=prob>0.5
+predict==Weekly[1,]$Direction
+```
+No, wrong classification.
+
+#### (d)
+```{r echo=TRUE ,fig.width=8,fig.height=8}
+length=dim(Weekly)[1]
+result=rep(0,length)
+for(i in 1:length){
+glm.fit2=glm(Direction~Lag1+Lag2,data=Weekly[-i,],family=binomial)
+prob=predict(glm.fit2,Weekly[i,],type='response')
+if(predict>0.5){
+  predict='Up'
+}
+else{predict='Down'}
+result[i]=mean(predict!=Weekly[i,]$Direction)
+}
+```
+
+#### (e)
+```{r echo=TRUE ,fig.width=8,fig.height=8}
+mean(result)
+```
+error rate is about 0.44.
+
+### Q8
+#### (a)
+```{r echo=TRUE ,fig.width=8,fig.height=8}
+set.seed(1)
+y=rnorm(100)
+x=rnorm(100)
+y=x-2*x^2+rnorm(100)
+```
+n is 100 and p is 1.
+
+$$
+y=-2x^2+x+\epsilon
+$$
+This is a polynomial regression model where $\epsilon$ follows N(0,1)
+
+#### (b)
+```{r echo=TRUE ,fig.width=8,fig.height=8}
+plot(x,y)
+```
+y has a quadratic shape of x. 
+
+#### (c)
+```{r echo=TRUE ,fig.width=8,fig.height=8}
+set.seed(1)
+error1=rep(0,4)
+da=data.frame(x,y)
+for(i in 1:4){
+  length=dim(da)[1]
+  result=0
+  for(j in 1:length){
+    lm.fit2=lm(y~poly(x,i),data=da[-j,])
+    predict=predict(lm.fit2,da[j,])
+    result=result+(predict-da$y[j])^2
+  }
+  error1[i]=result
+}
+error1
+```
+
+#### (d)
+```{r echo=TRUE ,fig.width=8,fig.height=8}
+set.seed(2)
+error2=rep(0,4)
+da=data.frame(x,y)
+for(i in 1:4){
+  length=dim(da)[1]
+  result=0
+  for(j in 1:length){
+    lm.fit2=lm(y~poly(x,i),data=da[-j,])
+    predict=predict(lm.fit2,da[j,])
+    result=result+(predict-da$y)^2
+  }
+  error2[i]=result
+}
+error2
+```
+Same as (c) because the random seed has no inflences on the samples in temrs of LOOCV.
+
+#### (e)
+The second model. It is what we expected because we simulate our data by assuming y and x have a quadratic relationship.
+
+#### (f)
+```{r echo=TRUE ,fig.width=8,fig.height=8}
+lm.fit2=lm(y~poly(x,i),data=da)
+summary(lm.fit2)
+```
+Yes, the results agree with the conclusion.
+
+### Q9
+#### (a)
+```{r echo=TRUE ,fig.width=8,fig.height=8}
+library(MASS)
+mean(Boston$medv)
+```
+
+#### (b)
+```{r echo=TRUE ,fig.width=8,fig.height=8}
+
+sd(Boston$medv)/sqrt(dim(Boston)[1]-1)
+```
+standard error measures how far the sample mean of the data is likely to be from the true population mean
+
+#### (c)
+```{r echo=TRUE ,fig.width=8,fig.height=8}
+mu<-function(data,index){
+  return(mean(data$medv[index]))
+}
+boot(Boston,mu,100)
+```
+The two results are very close.
+
+#### (d)
+```{r echo=TRUE ,fig.width=8,fig.height=8}
+t.test(Boston$medv)
+
+c(mean(Boston$medv)-2*0.429,mean(Boston$medv)+2*0.429)
+```
+The two confidence intervals are very close.
+
+#### (e)
+```{r echo=TRUE ,fig.width=8,fig.height=8}
+median(Boston$medv)
+```
+
+#### (f)
+```{r echo=TRUE ,fig.width=8,fig.height=8}
+mu<-function(data,index){
+  return(median(Boston$medv[index]))
+}
+boot(Boston,mu,100)
+
+```
+
+#### (g)
+```{r echo=TRUE ,fig.width=8,fig.height=8}
+quantile(Boston$medv,0.1)
+```
+
+#### (h)
+```{r echo=TRUE ,fig.width=8,fig.height=8}
+mu<-function(data,index){
+  return(quantile(Boston$medv[index],0.1))
+}
+boot(Boston,mu,100)
+
+```

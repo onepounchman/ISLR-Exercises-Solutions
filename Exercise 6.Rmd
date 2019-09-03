@@ -1,0 +1,396 @@
+---
+title: "Exercise 6"
+author: "wenbo"
+output: html_document
+---
+
+***
+## Conceptual
+***
+>Q1 
+
+#### (a)
+Best subset.
+
+#### (b)
+Either one is possible.
+
+#### (c)
+i True 
+
+ii True
+
+iii False
+
+iv False
+
+v False
+
+### Q2
+#### (a)
+Chose iii. The reason is that lasso has penalty which restricts the flexibilty of the linear model. Therefore, it often decreases variance and increas bias.
+
+#### (b)
+Chose iii. The reason is similar to (a)
+
+#### (c)
+Chose ii. For non-linear models, they have more flexibility than linear models. 
+
+### Q3
+#### (a)
+Chose iv. For training set, The increasing of s is equivalent to increase the flexibility of the model, RSS will steadily decrease.
+
+#### (b)
+Chose ii. For test set, initially RSS will decrease then it will increase because of overfitting.
+
+#### (c)
+Chose iii. For variance, as flexvility increasing, variance will steadly increase.
+
+#### (d)
+Chose iv. For bias, as flexvility increasing, variance will steadly decrease.
+
+#### (e)
+Chose v. For irreducible error, it is a constant value and it is not correlated with the value of s.
+
+### Q4
+
+Increasing $\lambda$ from 0 means decrease the flexibility of the model
+
+#### (a)
+Chose iii.
+
+#### (b)
+Chose ii. 
+
+#### (c)
+Chose iv. 
+
+#### (d)
+Chose iii. 
+
+#### (e)
+Chose v. 
+
+### Q5
+
+#### (a)
+$$
+min \quad \sum_{i=1}^2(yi-\sum_{j=1}^2\beta_jx_{ij})^2+ \lambda\sum_{j=1}^2\beta_j^2
+$$
+
+#### (b)
+We can obtain the $\hat\beta_1$ and $\hat\beta_2$ by making the first derivative of this optimization proble equal 0.
+
+let $x_{11}=x_{12}=x_1$ and $x_{21}=x_{22}=x_2$
+$$
+L=\sum_{i=1}^2(yi-\sum_{j=1}^2\beta_jx_{ij})^2+ \lambda\sum_{j=1}^2\beta_j^2\\
+\frac{\alpha L}{\alpha \beta_1}=2\sum_{i=1}^2(yi-\sum_{j=1}^2\beta_jx_{ij})(-x_{i1})+2\lambda\beta_1=0\\
+\rightarrow \quad \hat\beta_1=\frac{\sum_{i=1}^2y_ix_i-\hat\beta_2x_i^2}{\lambda+\sum_{i=1}^{2}x_i^2} -\,-(1)\\
+$$
+Also, we can get the estimation of $\beta_2$ in a simialr way:
+$$
+\rightarrow \quad \hat\beta_2=\frac{\sum_{i=1}^2y_ix_i-\hat\beta_1x_i^2}{\lambda+\sum_{i=1}^{2}x_i^2} -\,-(2)\\
+$$
+By eliminating the terms in two equations, we can obtain that:
+$$
+\hat{\beta_1}=\hat{\beta_2}
+$$
+
+#### (c)
+$$
+min \quad \sum_{i=1}^2(yi-\sum_{j=1}^2\beta_jx_{ij})^2+ \lambda\sum_{j=1}^2|\beta_j|
+$$
+
+
+
+#### (d)
+Then we assume that $\beta_j$ doesn't equal 0.
+$$
+L=\sum_{i=1}^2(yi-\sum_{j=1}^2\beta_jx_{ij})^2+ \lambda\sum_{j=1}^2|\beta_j|\\
+\frac{\alpha L}{\alpha \beta_1}=2\sum_{i=1}^2(yi-\sum_{j=1}^2\beta_jx_{i})(-x_{i1})+\lambda\frac{|\beta_1|}{\beta_1}=0\\
+\rightarrow \sum_{j=1}^2\sum_{i=1}^2\beta_jx_{i}+\lambda\frac{|\beta_1|}{\beta_1}=\sum_{i=1}^2y_ix_i \quad-\,-(1)\\
+$$
+Similarly 
+$$
+L=\sum_{i=1}^2(yi-\sum_{j=1}^2\beta_jx_{ij})^2+ \lambda\sum_{j=1}^2|\beta_j|\\
+\frac{\alpha L}{\alpha \beta_2}=2\sum_{i=1}^2(yi-\sum_{j=1}^2\beta_jx_{i})(-x_{i1})+\lambda\frac{|\beta_2|}{\beta_2}=0\\
+\rightarrow \sum_{j=1}^2\sum_{i=1}^2\beta_jx_{i}+\lambda\frac{|\beta_2|}{\beta_2}=\sum_{i=1}^2y_ix_i \quad-\,-(2) \\
+$$
+We notice that the right hand side for (1) and (2) are equal. By eliminating some terms, we obtain that:
+$$
+\frac{\hat{|\beta_2|}}{\hat{\beta_2}}=\frac{\hat{|\beta_1|}}{\hat{\beta_1}}
+$$
+Here we can see there are many solutions for this equation.
+
+### Q6
+
+#### (a)
+Let y=8 and $\lambda=5$
+```{r echo=TRUE ,fig.width=8,fig.height=8}
+beta=seq(-10,10,0.05)
+ridge=(8-beta)^2+5*beta^2
+plot(beta,ridge,main='ridge regression')
+points(3/4,(8-4/3)^2+5*(4/3)^2,col='blue',pch=15)
+```
+It can be seen that $\hat{\beta}^R_j=y_j/(1+\lambda)=4/3$ optimizes the ridge regression equation.
+
+#### (b)
+Let y=8 and $\lambda=5$
+```{r echo=TRUE ,fig.width=8,fig.height=8}
+beta=seq(-10,10,0.05)
+lasso=(8-beta)^2+5*abs(beta)
+plot(beta,lasso,main='lasso regression')
+points(5.5,(8-5.5)^2+5*(5.5),col='blue',pch=15)
+```
+It can be seen that $\hat{\beta}^L_j=y_j-\lambda/2=5.5$ optimizes the ridge regression equation.
+
+### Q7
+
+#### (a)
+$$
+\begin{aligned}
+Likelihood&=P(\bf{y}|\beta)\\
+&=\prod_{i=1}^n P(y_i|\beta,\delta^2)\\
+&=\prod_{i=1}^n \frac{1}{\delta\sqrt{2\pi}}\exp(-\frac{(y_i-\beta_0+\sum_{j=1}^px_{ij}\beta_j)^2}{2\delta^2})\\
+&=(\frac{1}{\delta\sqrt{2\pi}})^n\exp(-\frac{\sum_{i=1}^n(y_i-\beta_0+\sum_{j=1}^px_{ij}\beta_j)^2}{2\delta^2})
+\end{aligned}
+$$
+
+#### (b)
+$$
+\begin{aligned}
+Posterior&=(\frac{1}{\delta\sqrt{2\pi}})^n\exp(-\frac{\sum_{i=1}^n(y_i-\beta_0+\sum_{j=1}^px_{ij}\beta_j)^2}{2\delta^2})
+\prod_{j=1}^p\frac{1}{2b}\exp(\frac{-|\beta_j|}{b})\\
+&=(\frac{1}{\delta\sqrt{2\pi}})^n(\frac{1}{2b})^p\exp(-\frac{\sum_{i=1}^n(y_i-\beta_0+\sum_{j=1}^px_{ij}\beta_j)^2}{2\delta^2}+\sum_{j=1}^p\frac{-|\beta_j|}{b})
+\end{aligned}
+$$
+
+#### (c)
+Since maximizing log from of a expression is equivalent to maximize itself. We can take a log on both sides. 
+$$
+\begin{aligned}
+\log{Posterior}&=\log(\frac{1}{\delta\sqrt{2\pi}})^n(\frac{1}{2b})^p-\frac{\sum_{i=1}^n(y_i-\beta_0+\sum_{j=1}^px_{ij}\beta_j)^2}{2\delta^2}+\sum_{j=1}^p\frac{-|\beta_j|}{b}\\
+\end{aligned}
+$$
+$$
+\begin{aligned}
+\mathop{argmax}\limits_{\beta}\quad Posterior&=\mathop{argmax}\limits_{\beta}\quad\log(\frac{1}{\delta\sqrt{2\pi}})^n(\frac{1}{2b})^p-\frac{\sum_{i=1}^n(y_i-\beta_0+\sum_{j=1}^px_{ij}\beta_j)^2}{2\delta^2}+\sum_{j=1}^p\frac{-|\beta_j|}{b}\\
+&=\mathop{argmax}\limits_{\beta}\quad\sum_{i=1}^n-\frac{(y_i-\beta_0+\sum_{j=1}^px_{ij}\beta_j)^2}{2\delta^2}+\sum_{j=1}^p\frac{-|\beta_j|}{b}\\
+&=\mathop{argmin}\limits_{\beta}\quad \frac{1}{2\delta^2}(\sum_{i=1}^n(y_i-\beta_0+\sum_{j=1}^px_{ij}\beta_j)^2{}+\sum_{j=1}^p\frac{2\delta^2}{b}|\beta_j|)\\
+&=\mathop{argmin}\limits_{\beta}\quad \sum_{i=1}^n(y_i-\beta_0+\sum_{j=1}^px_{ij}\beta_j)^2{}+\sum_{j=1}^p\frac{2\delta^2}{b}|\beta_j|\\
+&=\mathop{argmin}\limits_{\beta}\quad \sum_{i=1}^n(y_i-\beta_0+\sum_{j=1}^px_{ij}\beta_j)^2{}+\lambda\sum_{j=1}^p|\beta_j|\\
+\text{by letting}\quad\lambda=\frac{2\delta^2}{b}
+\end{aligned}
+$$
+This is the lasso equation.
+
+#### (d)
+$$
+\begin{aligned}
+Posterior&=\prod_{i=1}^n \frac{1}{\delta\sqrt{2\pi}}\exp(\frac{-(y_i-\beta_0+\sum_{j=1}^px_{ij}\beta_j)^2}{2\delta^2})
+\prod_{j=1}^p\frac{1}{\sqrt{2\pi c}}\exp(\frac{-\beta_j^2}{2c})\\
+&=(\frac{1}{\delta\sqrt{2\pi}})^n\exp(\frac{-\sum_{i=1}^n(y_i-\beta_0+\sum_{j=1}^px_{ij}\beta_j)^2}{2\delta^2})
+(\frac{1}{\sqrt{2\pi c}})^p\exp(\frac{-\sum_{j=1}^p\beta_j^2}{2c})
+\end{aligned}
+$$
+
+#### (e)
+Firstly, take the log on both sides:
+$$
+\log Posterior=\log(\frac{1}{\delta\sqrt{2\pi}})^n(\frac{1}{\sqrt{2\pi c}})^p+\frac{-\sum_{i=1}^n(y_i-\beta_0+\sum_{j=1}^px_{ij}\beta_j)^2}{2\delta^2}
++\frac{-\sum_{j=1}^p\beta_j^2}{2c}
+$$
+$$
+\begin{aligned}
+\mathop{argmax}\limits_{\beta} \quad Posterior&=\mathop{argmax}\limits_{\beta} \quad \log(\frac{1}{\delta\sqrt{2\pi}})^n(\frac{1}{\sqrt{2\pi c}})^p+\frac{-\sum_{i=1}^n(y_i-\beta_0+\sum_{j=1}^px_{ij}\beta_j)^2}{2\delta^2}
+-\frac{\sum_{j=1}^p\beta_j^2}{2c}\\
+&=\mathop{argmax}\limits_{\beta}\quad\frac{-\sum_{i=1}^n(y_i-\beta_0+\sum_{j=1}^px_{ij}\beta_j)^2}{2\delta^2}
+-\frac{\sum_{j=1}^p\beta_j^2}{2c}\\
+&=\mathop{argmin}\limits_{\beta}\quad\frac{1}{2\delta^2}(\sum_{i=1}^n(y_i-\beta_0+\sum_{j=1}^px_{ij}\beta_j)^2+\frac{2\delta^2}{2c}\sum_{j=1}^p\beta_j^2)\\
+&=\mathop{argmin}\limits_{\beta}\quad\sum_{i=1}^n(y_i-\beta_0+\sum_{j=1}^px_{ij}\beta_j)^2+\frac{2\delta^2}{2c}\sum_{j=1}^p\beta_j^2\\
+&=\mathop{argmin}\limits_{\beta}\quad\sum_{i=1}^n(y_i-\beta_0+\sum_{j=1}^px_{ij}\beta_j)^2+\lambda\sum_{j=1}^p\beta_j^2\\
+\text{by letting} \quad \lambda=\frac{2\delta^2}{2c}
+\end{aligned}
+$$
+This is the equation from of ridge regression.
+
+***
+## Applied
+***
+
+### Q8
+
+#### (a)
+```{r echo=TRUE ,fig.width=8,fig.height=8}
+set.seed(1)
+x=rnorm(100)
+epi=rnorm(100)
+```
+
+#### (b)
+```{r echo=TRUE ,fig.width=8,fig.height=8}
+Y=1+2*x+3*x^2+4*x^3+epi
+```
+
+#### (c)
+```{r echo=TRUE ,fig.width=8,fig.height=8}
+library(leaps)
+new_x=data.frame(x,x^2,x^3,x^4,x^5,x^6,x^7,x^8,x^9,x^10,Y)
+reg.fit=regsubsets(Y~.,new_x)
+reg.summary=summary(reg.fit)
+par(mfrow=c(3,1))
+#can plot with one dimension data
+plot(reg.summary$cp,xlab = 'number of variables',ylab='cp',type='l')
+plot(reg.summary$bic,xlab = 'number of variables',ylab='bic',type='l')
+plot(reg.summary$adjr2,xlab = 'number of variables',ylab='adjr2',type='l')
+number=c(which.min(reg.summary$cp),which.min(reg.summary$bic),which.max(reg.summary$adjr2))
+number
+coef(reg.fit,4)
+coef(reg.fit,3)
+coef(reg.fit,4)
+```
+The best models for 3 criteria are not the same and they are shown above.
+
+#### (d)
+```{r echo=TRUE ,fig.width=8,fig.height=8}
+reg.fwd=regsubsets(Y~.,new_x,nvmax=10,method='forward')
+reg.summary1=summary(reg.fwd)
+par(mfrow=c(2,2))
+#can plot with one dimension data
+plot(reg.summary1$cp,xlab = 'number of variables',ylab='cp',type='l')
+plot(reg.summary1$bic,xlab = 'number of variables',ylab='bic',type='l')
+plot(reg.summary1$adjr2,xlab = 'number of variables',ylab='adjr2',type='l')
+number=c(which.min(reg.summary1$cp),which.min(reg.summary1$bic),which.max(reg.summary1$adjr2))
+number
+
+reg.bwd=regsubsets(Y~.,new_x,nvmax=10,method='forward')
+reg.summary2=summary(reg.bwd)
+par(mfrow=c(3,1))
+#can plot with one dimension data
+plot(reg.summary2$cp,xlab = 'number of variables',ylab='cp',type='l')
+plot(reg.summary2$bic,xlab = 'number of variables',ylab='bic',type='l')
+plot(reg.summary2$adjr2,xlab = 'number of variables',ylab='adjr2',type='l')
+number=c(which.min(reg.summary2$cp),which.min(reg.summary2$bic),which.max(reg.summary2$adjr2))
+number
+
+reg.summary1
+reg.summary2
+```
+Same answer with (c).
+
+#### (e)
+```{r echo=TRUE ,fig.width=8,fig.height=8}
+library(glmnet)
+library(magrittr)
+grid=10^seq(10,-2,length=100)
+xx=model.matrix(Y~.,new_x)[,-1]
+cv.out=cv.glmnet(xx,Y,alpha=1)
+plot(cv.out)
+bestlam=cv.out$lambda.min
+#glmnet(xx,Y,lambda=grid) %>% predict(type='coefficients',s=bestlam)[1:11,]
+out=glmnet(xx,Y,lambda=grid)
+predict(out,type='coefficients',s=bestlam)[1:11,]
+```
+From $\beta_1$ to $\beta_3$, all the predictors are assigned substantial weights. For other predictors, they gives less influence.
+
+#### (f)
+```{r echo=TRUE ,fig.width=8,fig.height=8}
+Y=1+7*x^7+epi
+new_x=data.frame(x,x^2,x^3,x^4,x^5,x^6,x^7,x^8,x^9,x^10,Y)
+reg.fit=regsubsets(Y~.,new_x)
+reg.summary=summary(reg.fit)
+par(mfrow=c(2,2))
+#can plot with one dimension data
+plot(reg.summary$cp,xlab = 'number of variables',ylab='cp',type='l')
+plot(reg.summary$bic,xlab = 'number of variables',ylab='bic',type='l')
+plot(reg.summary$adjr2,xlab = 'number of variables',ylab='adjr2',type='l')
+number=c(which.min(reg.summary$cp),which.min(reg.summary$bic),which.max(reg.summary$adjr2))
+number
+coef(reg.fit,4)
+coef(reg.fit,3)
+coef(reg.fit,4)
+
+xx=model.matrix(Y~.,new_x)[,-1]
+cv.out=cv.glmnet(xx,Y,alpha=1)
+plot(cv.out)
+bestlam=cv.out$lambda.min
+#glmnet(xx,Y,lambda=grid) %>% predict(type='coefficients',s=bestlam)[1:11,]
+out=glmnet(xx,Y,lambda=grid)
+predict(out,type='coefficients',s=bestlam)[1:11,]
+```
+Lasso selects the correct model but best subset selection contains other terms.
+
+### Q9
+#### (a)
+```{r echo=TRUE ,fig.width=8,fig.height=8}
+library(ISLR)
+train_index=sample(777,600,replace=FALSE)
+train=College[train_index,]
+test=College[-train_index,]
+```
+
+#### (b)
+```{r echo=TRUE ,fig.width=8,fig.height=8}
+lm.fit=lm(Apps~.,train)
+pre=predict(lm.fit,test)
+err.lm=mean((pre-test$Apps)^2)
+mean((pre-test$Apps)^2)
+```
+
+#### (c)
+```{r echo=TRUE ,fig.width=8,fig.height=8}
+grid=10^seq(10,-2,length=100)
+train=sample(777,600,replace=FALSE)
+test=-train
+x=model.matrix(Apps~.,College)[,-1]
+y=College$Apps
+ridge.mod=glmnet(x[train,],y[train],alpha=0,lambda=grid)
+cv.out=cv.glmnet(x[train,],y[train],alpha=0)
+bestlam=cv.out$lambda.min
+ridge.pred=predict(ridge.mod,s=bestlam,newx=x[test,])
+err.ridge=mean((ridge.pred-y[test])^2)
+mean((ridge.pred-y[test])^2)
+coef(ridge.mod)[,18]
+```
+
+#### (d)
+```{r echo=TRUE ,fig.width=8,fig.height=8}
+lasso.mod=glmnet(x[train,],y[train],alpha=1,lambda=grid)
+cv.out=cv.glmnet(x[train,],y[train],alpha=1)
+bestlam=cv.out$lambda.min
+lasso.pred=predict(lasso.mod,s=bestlam,newx=x[test,])
+err.lasso=mean((lasso.pred-y[test])^2)
+mean((lasso.pred-y[test])^2)
+coef=predict(lasso.mod,type="coefficients",s=bestlam,newx=x[test,])
+length(coef[coef!=0])
+```
+16 non-zero coefficients.
+
+#### (e)
+```{r echo=TRUE ,fig.width=8,fig.height=8}
+library(pls)
+set.seed(1)
+pcr.fit=pcr(Apps~.,data=College,subset=train,scale=TRUE,validation='CV')
+validationplot(pcr.fit,val.type='MSEP')
+pcr.pred=predict(pcr.fit,x[test,],ncomp=17)
+err.pcr=mean((pcr.pred-y[test])^2)
+mean((pcr.pred-y[test])^2)
+```
+
+#### (f)
+```{r echo=TRUE ,fig.width=8,fig.height=8}
+set.seed(1)
+pls.fit=plsr(Apps~.,data=College,subset=train,scale=TRUE,validation='CV')
+validationplot(pls.fit,val.type='MSEP')
+pls.pred=predict(pls.fit,x[test,],ncomp=12)
+err.pls=mean((pls.pred-y[test])^2)
+mean((pls.pred-y[test])^2)
+```
+
+#### (g)
+```{r echo=TRUE ,fig.width=8,fig.height=8}
+err=c(err.lm,err.ridge,err.lasso,err.pcr,err.pls)
+names(err)=c('lm','ridge','lasso','pcr','pls')
+barplot(err)
+```
+The ridge regression seems to perform slightly better than others. There are not much difference among test errors.

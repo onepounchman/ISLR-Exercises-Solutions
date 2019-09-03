@@ -1,0 +1,539 @@
+---
+title: "Exercise 3"
+author: "wenbo"
+output: html_document
+---
+<style>
+.math {
+  font-size: large;
+}
+</style>
+
+***
+## Conceptual
+***
+### Q1 
+The null hypothesese for each parameters are whether they equals 0 respectively.
+
+Since the p-values for Intercept, TV and radio are all smaller than 0.0001, we can reject null hypothesis for each parameter and conclude that any one of them is not 0. However, the p-value for newspaper is 0.8599, we cannot reject null hypothesis so there is no evidence that newspaper is associated with sales.
+
+### Q2
+The main difference is that the output of KNN classifier assigns classification group based on the majority of cloest observations. But for KNN regression model, it outputs continous value which is the average value of cloest observations.
+
+### Q3
+we can write down the fitted linear model:
+$StartingSalary=50+20*GPA+0.07*IQ+35*Gender+0.01*GPA*IQ-10*GPA*Gender$
+
+#### (a)
+iii is correct. The difference of salaries between female and male is $35-10*GPA$. So when fixed GPA and IQ, we cannot decide which gender can make more money. But when GPA is high enough, the difference is smaller than 0, then we can see that males can earn more mony.
+
+#### (b)
+$StartingSalary=50+20*4+0.07*110+35*1+0.01*4*110-10*4*1=137.1$
+
+#### (c)
+FALSE.The range of IQ is always between 100~200, which is wider range than GPA(0~4). Therefore, although the coefficient is small, with GPA fixed, the interation term can have significant effects.
+
+### Q4
+#### (a)
+The RSS of the linear model is expected to be larger than it of the cubic model because a model with more predictors can perform better in the training dataset.
+
+#### (b)
+The RSS of the cubic model will be larger because of overfitting.
+
+#### (c)
+The RSS of the cubic model will be smaller because more parameters, less RSS in training data.
+
+#### (d)
+The RSS of the cubic model will be smaller because the true relationship is not linear, the cubic model can fit better.
+
+### Q5
+<style>
+.math {
+  font-size: large;
+}
+</style>
+
+$$
+\begin{aligned}
+\hat{y}_k&=x_k\hat\beta \\
+    &=x_k(\sum_{i=1}^n x_iy_i)/(\sum_{i^{\prime}=1}^nx_{i^\prime}^2)  \\
+    &=\sum_{i=1}^n\frac{x_ix_k}{\sum_{i^{\prime}=1}^nx_{i^\prime}^2}y_i  \\
+\end{aligned}
+$$
+
+Therefore 
+
+$c_i=\frac{x_ix_k}{\sum_{i^{\prime}=1}^nx_{i^\prime}^2}$
+
+### Q6
+using (3.4):
+$$
+  \hat{\beta}_1\overline{x}+\hat{\beta}_0=\hat{\beta}_1\overline{x}+\overline{y}-\hat{\beta}_1\overline{x}=\overline{y}
+$$
+This proves that the least squares line pass $(\overline{x},\overline{y})$
+
+### Q7
+For simplicity, here we assume that $\overline{x}=\overline{y}=0$ and under this assumption, the least squares estimation:
+$$
+   \hat{\beta}_1=\frac{\sum x_iy_i}{\sum x_i^2}\\
+   \hat{\beta}_0=0
+$$
+Then we compute $R^2$:
+$$
+\begin{aligned}
+R^2&=\frac{\sum_{i=1}^n \hat{y}_i^2}{\sum_{i=1}^n y_i^2}\\
+&=\frac{\sum (\hat{\beta}_1x_i)^2}{\sum_{i=1}^n y_i^2}\\
+&=\frac{\hat{\beta}_1^2\sum_{i=1}^n x_i^2}{\sum_{i=1}^n y_i^2}\\
+&=\frac{(\sum_{i=1}^n x_iy_i)^2}{(\sum_{i=1}^n x_i^2)^2}\frac{\sum_{i=1}^n x_i^2}{\sum_{i=1}^n y_i^2}\\
+&=\frac{(\sum_{i=1}^n x_iy_i)^2}{\sum_{i=1}^n x_i^2\sum_{i=1}^n y_i^2}=Cor^2(x,y)
+\end{aligned}
+$$
+
+
+## Applied
+### Q8
+#### (a)
+```{r echo=TRUE ,fig.width=8,fig.height=8}
+library(ISLR)
+lm.fit=lm(mpg~horsepower,Auto)
+summary(lm.fit)
+
+
+predict(lm.fit,data.frame(horsepower=98),interval='prediction')
+confint(lm.fit)
+```
+Horsepower and Auto has a negative linear relationship. 
+
+When horsepower increases by 100, mpg will nearly have a 15.8 increase. 
+
+When horsepower is 98, mpg will be 24.46708. The associated 95% confidence for horsepower is (-0.170517,-0.1451725), the predict (14.8094,34.12476).
+
+#### (b)
+```{r echo=TRUE ,fig.width=8,fig.height=8}
+attach(Auto)
+plot(horsepower,mpg)
+abline(lm.fit)
+```
+#### (c)
+```{r echo=TRUE ,fig.width=8,fig.height=8}
+par(mfrow=c(2,2))
+plot(lm.fit)
+```
+From (1,1), there is a U shape, meaning that non-linearity exists in the data. Also, the residual plots shows that the variance of error terms is not constant. From (2,2), there exists high leverage poings.  
+
+### Q9
+#### (a)
+```{r echo=TRUE ,fig.width=8,fig.height=8}
+pairs(Auto)
+```
+#### (b)
+```{r echo=TRUE ,fig.width=8,fig.height=8}
+cor(Auto[,-9])
+```
+#### (c)
+```{r echo=TRUE ,fig.width=8,fig.height=8}
+lm.fit2=lm(mpg~.-name,Auto)
+summary(lm.fit2)
+```
+Yes. Displacemnet, weight, year and origin are statistically important to the response.
+Let other parameters fixed, with year increasing, mpg will increase.
+
+#### (d)
+```{r echo=TRUE ,fig.width=8,fig.height=8}
+par(mfrow=c(2,2))
+plot(lm.fit2)
+```
+The residual VS fitted plot suggests that the variances of the error terms increase with the value of the response and the non-linearity of data.
+
+The $\sqrt {stuResiduall}$ vs fitted plot suggests no outliers.
+
+The redisual vs leverage plot suggests there is a leverage point 14.
+
+
+
+#### (e)
+```{r echo=TRUE ,fig.width=8,fig.height=8}
+#try one model
+fit.lm0 <- lm(mpg~displacement*weight+year:origin, data=Auto)
+summary(fit.lm0)
+```
+The two interaction terms appear tp be statistically important.
+#### (f)
+```{r echo=TRUE ,fig.width=8,fig.height=8}
+lm.fit4=lm(mpg~.-name+I(weight^2),Auto)
+summary(lm.fit4)
+```
+The square of weight is also significant.
+
+### Q10
+#### (a)
+```{r echo=TRUE ,fig.width=8,fig.height=8}
+lm.fit=lm(Sales~Price+Urban+US,Carseats)
+```
+#### (b)
+```{r echo=TRUE ,fig.width=8,fig.height=8}
+summary(lm.fit)
+```
+Sales: sales in thousands at each location
+
+Price: price charged for car seats at each location 
+
+Urban: No/Yes by location 
+
+US: No/Yes by location
+
+Coefficients for
+
+* Price (-0.054459): Sales drop by 54 for each  dollar increase in Price - statistically significant
+* UrbanYes (-0.021916): Sales are 22 lower for Urban locations - not statistically significant
+* USYes (1.200573): Sales are 1,201 higher in the US locations - statistically significant
+
+#### (c)
+Test the coding form of dummy variables.
+```{r echo=TRUE ,fig.width=8,fig.height=8}
+contrasts(Carseats$Urban)
+contrasts(Carseats$US)
+```
+\usepackage{amsmath}
+\[ Sales_i=\beta_0+\beta_1Price_i+ \begin{cases} 
+      \beta_2+\beta_3 & Urban=Yes, US=Yes \\
+      \beta_2 & Urban=Yes, US=No\\
+      \beta_3 & Urban=No, US=Yes \\
+      0 & Urban=No, US=No
+   \end{cases}
+\]
+
+#### (d)
+We can reject the null hypothesis of Price and US.
+
+#### (e)
+```{r echo=TRUE ,fig.width=8,fig.height=8}
+lm.fit2=lm(Sales~Price+US,Carseats)
+```
+#### (f)
+```{r echo=TRUE ,fig.width=8,fig.height=8}
+anova(lm.fit,lm.fit2)  #结果跟输入model顺序无关
+```
+Using Anova, the simplified model can fit data better.
+#### (g)
+```{r echo=TRUE ,fig.width=8,fig.height=8}
+confint(lm.fit2)
+```
+#### (h)
+```{r echo=TRUE ,fig.width=8,fig.height=8}
+
+par(mfrow=c(2,2))
+# residuals v fitted plot doesn't show strong outliers
+plot(lm.fit2)  
+```
+No evidence of outliers.
+
+
+The (2,2) can show there exists leverage point. ($The threshhold for leverage statistics: 3/400=0.0075$)
+
+```{r echo=TRUE ,fig.width=8,fig.height=8}
+library(car)
+leveragePlots(lm.fit2)
+```
+
+### Q11
+#### (a)
+```{r echo=TRUE ,fig.width=8,fig.height=8}
+set.seed(1)
+x=rnorm(100)
+y=2*x+rnorm(100)
+
+lm.fit=lm(y~x+0)
+summary(lm.fit)
+```
+The p-value of this parameter is very small, so we can reject null hypothesis and conclude that x has relationship with y.
+
+#### (b)
+```{r echo=TRUE ,fig.width=8,fig.height=8}
+lm.fit2=lm(x~y+0)
+summary(lm.fit2)
+```
+The p-value of this parameter is very small, so we can reject null hypothesis and conclude that x has relationship with y.
+
+#### (c)
+Their ${\rm R}^2$, adjusted ${\rm R}^2$, t value and F-statistic are equal.
+#### (d)
+From Q5, we know
+$$
+\hat{\beta}=(\sum_{i=1}^nx_iy_i)/(\sum_{i^\prime=1}^nx_{i^\prime}^2)
+$$
+Then we can get:
+$$
+\begin{aligned}
+t-statistic&=\frac{\hat{\beta}}{SE(\hat{\beta})}\\
+&=\frac{\sum x_iy_i}{\sum x_{i}^2} \sqrt{\frac{(n-1)\sum x_i^2}{\sum (y_i-x_i\hat\beta)^2}}\\
+&=\frac{\sum x_iy_i\sqrt{n-1}}{\sqrt{\sum x_i^2}\sqrt{\sum(y_i-x_i\hat\beta)^2}}\\
+&=\frac{\sum x_iy_i\sqrt{n-1}}{\sqrt{\sum x_i^2}\sqrt{\sum y_i^2-\frac{(\sum x_iy_i)^2}{\sum x_i^2}}}\\
+&=\frac{\sum x_iy_i\sqrt{n-1}}{\sqrt{(\sum x_i^2)(\sum y_i^2)-(\sum x_iy_i)^2}}
+\end{aligned}
+$$
+
+#### (e)
+From (d), we can see the equation for t-value is symmetrical interms of x and y, therefore we can get same t-statistic value.
+
+#### (f)
+```{r echo=TRUE ,fig.width=8,fig.height=8}
+lm.fit=lm(y~x)
+summary(lm.fit)
+lm.fit2=lm(x~y)
+summary(lm.fit2)
+
+```
+
+### Q12 
+#### (a)
+when $\sum x_i^2=\sum y_i^2$
+
+#### (b)
+```{r echo=TRUE ,fig.width=8,fig.height=8}
+x=rnorm(100)
+y=rnorm(100,1)
+summary(lm(y~x+0))
+summary(lm(x~y+0))
+```
+Different coefficient estimation.
+
+#### (c)
+```{r echo=TRUE ,fig.width=8,fig.height=8}
+x=rnorm(100)
+y = sample(x, replace = FALSE, 100)
+summary(lm(y~x+0))
+summary(lm(x~y+0))
+```
+Same coefficient estimation.
+
+### Q13
+#### (a)
+```{r echo=TRUE ,fig.width=8,fig.height=8}
+set.seed(1)
+x=rnorm(100)
+```
+#### (b)
+```{r echo=TRUE ,fig.width=8,fig.height=8}
+eps=rnorm(100,0,0.25)
+```
+
+#### (c)
+```{r echo=TRUE ,fig.width=8,fig.height=8}
+y=-1+0.5*x+eps
+```
+Length of y is 100. $\beta_0$ is -1 and $\beta_1$ is 0.5
+
+#### (d)
+```{r echo=TRUE ,fig.width=8,fig.height=8}
+plot(x,y)
+```
+There is a positive linear relationship between x and y.
+
+#### (e)
+```{r echo=TRUE ,fig.width=8,fig.height=8}
+lm.fit=lm(y~x)
+summary(lm.fit)
+```
+$\hat\beta_0$ and $\hat\beta_1$ are simillar to $\beta_0$ and $\beta_1$.
+
+#### (f)
+```{r echo=TRUE ,fig.width=8,fig.height=8}
+plot(x,y)
+abline(-1, 0.5, col="blue")  # true regression
+abline(lm.fit, col="red")    # fitted regression
+legend(x = c(1,1),
+       y = c(-2,-2),
+       legend = c("population", "model fit"),
+       col = c("blue","red"), lwd=3 )
+```
+
+#### (g)
+```{r echo=TRUE ,fig.width=8,fig.height=8}
+lm.fit2=lm(y~poly(x,2))
+summary(lm.fit2)
+```
+From the small p-value of F-statistic, we can reject null hypothesis and say that the model with quadratic term can perform better.
+
+#### (h)
+We decrease the cariance of error term to 0.5
+```{r echo=TRUE ,fig.width=8,fig.height=8}
+set.seed(1)
+x=rnorm(100)
+eps=rnorm(100,0,0.1)
+y=-1+0.5*x+eps
+lm.fit2=lm(y~x)
+summary(lm.fit2)
+plot(x,y)
+abline(-1, 0.5, col="blue")  # true regression
+abline(lm.fit2, col="red")    # fitted regression
+legend(x = c(1,1),
+       y = c(-2,-2),
+       legend = c("population", "model fit"),
+       col = c("blue","red"), lwd=3 )
+```
+The regression model is different from previous one.
+
+#### (i)
+We increase the cariance of error term to 0.5
+```{r echo=TRUE ,fig.width=8,fig.height=8}
+set.seed(1)
+x=rnorm(100)
+eps=rnorm(100,0,0.4)
+y=-1+0.5*x+eps
+lm.fit3=lm(y~x)
+summary(lm.fit3)
+plot(x,y)
+abline(-1, 0.5, col="blue")  # true regression
+abline(lm.fit3, col="red")    # fitted regression
+legend(x = c(1,1),
+       y = c(-2,-2),
+       legend = c("population", "model fit"),
+       col = c("blue","red"), lwd=3 )
+```
+The regression model is different previous one.
+
+#### (j)
+```{r echo=TRUE ,fig.width=8,fig.height=8}
+confint(lm.fit)
+confint(lm.fit2)
+confint(lm.fit3)
+rm(list = setdiff(ls(), lsf.str()))
+```
+The confidence intervals of three models are different, less noise data< noise data< more noise data
+rm(list = setdiff(ls(), lsf.str()))
+
+### Q14
+#### (a)
+```{r echo=TRUE ,fig.width=8,fig.height=8}
+set.seed(1)
+x1=runif(100)
+x2=0.5*x1+rnorm(100)/10
+y=2+2*x1+0.3*x2+rnorm(100)
+```
+$$y=\beta_0+\beta_1x_1+\beta_2x_2+\epsilon$$
+
+Regression coefficients is $\beta_1$ and $\beta2$
+
+#### (b)
+```{r echo=TRUE ,fig.width=8,fig.height=8}
+plot(x1,x2)
+```
+
+#### (c)
+```{r echo=TRUE ,fig.width=8,fig.height=8}
+lm.fit=lm(y~x1+x2)
+summary(lm.fit)
+```
+$\hat\beta_0$ is 2.1305. $\hat\beta_1$ is 1.4396. $\hat\beta_2$ is 1.0097.
+ 
+We can reject the null hypotheses of $\hat\beta_0$ and $\hat\beta_1$.
+ 
+#### (d)
+```{r echo=TRUE ,fig.width=8,fig.height=8}
+lm.fit=lm(y~x1)
+summary(lm.fit)
+```
+Yes.
+
+#### (e)
+```{r echo=TRUE ,fig.width=8,fig.height=8}
+lm.fit=lm(y~x2)
+summary(lm.fit)
+```
+Yes.
+
+#### (f)
+No. Without the presence of other predictors, both $\beta_1$ and $\beta_2$ are statistically significant. In the presence of other predictors, $\beta_2$ is no longer statistically significant.
+
+#### (g)
+```{r echo=TRUE ,fig.width=8,fig.height=8}
+x1=c(x1,0.1)
+x2=c(x2,0.8)
+y=c(y,6)
+
+par(mfrow = c(2,2))
+lm.fit4 = lm(y ~ x1 + x2)
+summary(lm.fit4)
+plot(lm.fit4)
+lm.fit5 = lm(y ~ x1)
+summary(lm.fit5)
+plot(lm.fit5)
+lm.fit6 = lm(y ~ x2)
+summary(lm.fit6)
+plot(lm.fit6)
+```
+When we add this point, it appears to be an outlier, beacause of a decreasing in  ${\rm R}^2$  of simple linear model on $x_1$.
+
+The third plot shows that the newly added observation in $x_2$ is a high leverage point.
+```{r echo=TRUE ,fig.width=8,fig.height=8}
+wrong2=lm(y~x1)
+summary(wrong2)
+par(mfrow=c(2,2))
+plot(wrong2)
+```
+
+
+```{r echo=TRUE ,fig.width=8,fig.height=8}
+wrong3=lm(y~x2)
+summary(wrong3)
+par(mfrow=c(2,2))
+plot(wrong3)
+```
+
+### Q15
+#### (a)
+```{r echo=TRUE ,fig.width=8,fig.height=8}
+library(MASS)
+head(Boston)
+
+var=names(Boston[,-1])
+
+lmf<-function(predictor){
+  print(predictor)
+  summary(lm(Boston$crim~Boston[,predictor]))
+  
+}
+
+lapply(var,lmf)
+```
+Except chas, any other predictor has significant association with the response.
+
+#### (b)
+```{r echo=TRUE ,fig.width=8,fig.height=8}
+lm.fit=lm(crim~.,Boston)
+summary(lm.fit)$fstatistic
+```
+We can reject the null hypothesis of zn, dis, rad, black and medv.
+
+#### (c)
+```{r echo=TRUE ,fig.width=8,fig.height=8}
+simplelm=vector('numeric')
+lmfc<-function(predictor){
+  x=lm(Boston$crim~Boston[,predictor])
+  coef=x$coefficients[2]
+  return(coef)
+}
+uni=unlist(lapply(var,lmfc))
+multi=lm(crim~.,Boston)$coefficients[2:14]
+plot(uni,multi)
+```
+
+#### (d)
+```{r echo=TRUE ,fig.width=8,fig.height=8}
+summary(lm(crim~poly(zn,3), data=Boston))      # 1,2
+summary(lm(crim~poly(indus,3), data=Boston))   # 1,2,3
+summary(lm(crim~poly(nox,3), data=Boston))     # 1,2,3
+summary(lm(crim~poly(rm,3), data=Boston))      # 1,2
+summary(lm(crim~poly(age,3), data=Boston))     # 1,2,3
+summary(lm(crim~poly(dis,3), data=Boston))     # 1,2,3
+summary(lm(crim~poly(rad,3), data=Boston))     # 1,2
+summary(lm(crim~poly(tax,3), data=Boston))     # 1,2
+summary(lm(crim~poly(ptratio,3), data=Boston)) # 1,2,3
+summary(lm(crim~poly(black,3), data=Boston))   # 1
+summary(lm(crim~poly(lstat,3), data=Boston))   # 1,2
+summary(lm(crim~poly(medv,3), data=Boston))    # 1,2,3
+```
+Here we overlook chas because it is factor variable.
+
+The numbers on the right side show the significant order for the predictor. 

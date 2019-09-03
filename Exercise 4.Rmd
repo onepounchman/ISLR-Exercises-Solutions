@@ -1,0 +1,370 @@
+---
+title: "Exercise 4"
+author: "wenbo"
+output:
+  html_document: default
+  pdf_document: default
+---
+***
+## Conceptual
+***
+### Q1 
+$$
+P(X)=\frac{e^{\beta0+\beta1X}}{1+e^{\beta0+\beta1X}}\\
+1-P(X)=\frac{1}{1+e^{\beta0+\beta1X}}\\
+\frac{P(X)}{1-P(X)}=e^{\beta0+\beta1X}
+
+$$
+
+### Q2
+$p_k(x)$ is the posterior probability that an observation X=x belongs to the the kth class and it is:
+$$
+p_k(x)=\frac{\pi_k\frac{1}{\sqrt{2\pi}\delta}exp(-\frac{1}{2\delta^2}(x-\mu_k)^2)}{\sum_{l=1}^K \pi_l \frac{1}{\sqrt{2\pi}}exp(-\frac{1}{2\delta^2}(x-\mu_l)^2)}
+$$
+
+Then we take the log for both sides:
+
+*Notice that the denominator is a constant for the observations in each class, so we set it $C$. 
+ 
+$$
+\log p_k(x)=\frac{\log \pi_k+\log\frac{1}{\sqrt{2\pi}\delta}-\frac{x^2}{2\delta^2}-\frac{\mu_k^2}{2\delta^2}+\frac{x\mu_k}{\delta^2}}{C}
+$$
+Here we can see the second term and the third term is the same for all classes, so maximizing $\delta_k(x)$ in (4.13) is equivalent to maximize $\log p_k(x)$. Since log is an increasing function when it is positive, $p_k(x)$ in (4.12) is equivalent to (4.13).
+
+### Q3
+We can write posterior probability of the k-th class:
+$$
+p_k(x)=\frac{\pi_k\frac{1}{\sqrt{2\pi}\delta_k}exp(-\frac{1}{2\delta^2}(x-\mu_k)^2)}{\sum_{l=1}^K \pi_l \frac{1}{\sqrt{2\pi}}exp(-\frac{1}{2\delta_k^2}(x-\mu_l)^2)}
+$$
+Then we can take the log, which is similar to (3) and the denominator is still a constant C.
+$$
+\log p_k(x)=\frac{\log \pi_k+\log\frac{1}{\sqrt{2\pi}\delta_k}-\frac{x^2}{2\delta_k^2}-\frac{\mu_k^2}{2\delta^2}+\frac{x\mu_k}{\delta^2}}{C}
+$$
+Notice the third term and it is a quadratic function of x. So Bayes's classfier not linear.
+
+### Q4
+#### (a)
+On average, 1/10 will be used to make the prediction because observations are uniformly distribution.
+
+#### (b)
+On average, when p=2, $\frac{1}{10}*\frac{1}{10}=\frac{1}{100}$
+
+#### (c)
+On average, when p=100, $(\frac{1}{10})^{100}$
+
+#### (d)
+Suppose on each dimension, we uniformly divided range of [0, 1] to 100 bins. If we want to find the nearest points within 10% of range of X1, X2 thourgh X100 (given p=100), then we need 10100 of data to cover the range. Therefore, as the p increases, the number of observations needed grows exponentially.
+
+#### (e)
+When there are a large number of dimensions, the percentage of observations that can be used to predict with KNN becomes very small. This means that for a set sample size, more features leads to fewer neighbors.
+
+#### (f)
+*p=1: side length is 1.
+
+*p=2: side length is $(0.1)^\frac{1}{2}$
+
+*p=n: side length is $(0.1)^\frac{1}{n}$
+
+### Q5
+#### (a) 
+QDA better on training set, LDA better on test set.
+
+#### (b)
+QDA better on both sets.
+
+#### (c)
+As sample size increases, test prediction aacuracy of QDA is improved relative to LDA.
+
+Reason: QDA is more flexible than LDA, so when data size incrases, it can fit better.
+
+#### (d)
+False. QDA tend to be overfitting when the decision boundary is just linear.
+
+### Q6
+#### (a)
+
+$$
+\begin{aligned}
+p(Y=A|X_1=40,X_2=3.5)&=\frac{e^{\beta_0+\beta_1X_1+\beta_2X_2}}{1+e^{\beta_0+\beta_1X_1+\beta_2X_2}}
+
+\end{aligned}
+$$
+```{r echo=TRUE ,fig.width=8,fig.height=8}
+exp(-6+0.05*40+1*3.5)/(1+exp(-6+0.05*40+1*3.5))
+```
+The probability for this student to get A is nearly 0.38.
+
+#### (b)
+$$
+\frac{\log(\frac{p(x)}{1-p(x)}e^{-\beta_0-\beta_2X_2})}{\beta_1}=X_1
+$$
+
+```{r echo=TRUE ,fig.width=8,fig.height=8}
+log(0.5/0.5*exp(6-3.5))/0.05    
+```
+50 hours are needed.
+
+### Q7
+There are two classes of response value. Here we can use Bayes' therorem:
+$$
+Pr(Y=Yes|X=x)=\frac{\pi_1 f_1(x)}{\sum_{l=1}^2\pi_l f_l(x)}
+$$
+Here $\pi_1=0.8,\pi_2=0.2$,f_1(x) is the density function of a normal random variable with mean 10 and variance 36 and f_2(x) is the density function of a normal random variable with mean 0 and variance 36.
+
+```{r echo=TRUE ,fig.width=8,fig.height=8}
+(0.8*dnorm(4,mean=10,sd=6))/(0.8*dnorm(4,mean=10,sd=6)+0.2*dnorm(4,mean=0,sd=6))
+```
+Therefore, we can get:
+$$
+\begin{aligned}
+Pr(Y=Yes|X=4)&=\frac{\pi_1 f_1(4)}{\sum_{l=1}^2\pi_l f_l(4)}\\
+              &\approx0.75
+
+\end{aligned}
+$$
+The probability that a company will issue a dividend this year given X=4 is about 0.75.
+
+### Q8
+
+### Q9
+#### (a)
+we want to solve p(x)
+$$
+p(x)/(1-p(x))=0.37
+$$
+so p(x) is about 0.27. It means in average, 27% people with odds 0.37 will in fact default.
+
+#### (b)
+The odds is $0.16/(1-0.16)\approx0.19$
+
+## Applied
+### Q10
+#### (a)
+```{r echo=TRUE ,fig.width=8,fig.height=8}
+library(ISLR)
+head(Weekly)
+summary(Weekly)
+pairs(~Year+Lag1+Lag2+Lag3+Lag4+Lag5+Volume+Today,Weekly)
+```
+
+#### (b)
+```{r echo=TRUE ,fig.width=8,fig.height=8}
+glm.fit=glm(Direction~Lag1+Lag2+Lag3+Lag4+Lag5+Volume,data=Weekly,family=binomial)
+summary(glm.fit)
+```
+Lag2 appears to be statistically important.
+
+#### (c)
+```{r echo=TRUE ,fig.width=8,fig.height=8}
+glm.prob=predict(glm.fit,type='response')
+glm.pred=rep('Down',1089)
+glm.pred[glm.prob>0.5]='Up'
+table(glm.pred,Weekly[,"Direction"])
+# complete.cases(Weekly[,"Direction"])
+```
+Overfall fraction of correct predictions is $\frac{54+557}{54+48+430+557} \approx0.56$ 
+
+The error rate of falsely predict down days to up is $\frac{48}{48+54} \approx0.47$
+
+The error rate of falsely predict up days to up is $\frac{430}{430+557} \approx0.44$
+
+#### (d)
+```{r echo=TRUE ,fig.width=8,fig.height=8}
+library(dplyr)
+train=filter(Weekly,Year>=1990&Year<=2008)
+test=filter(Weekly,Year>2008)
+glm.fit1=glm(Direction~Lag2,data=train,family=binomial)
+glm.prob1=predict(glm.fit1,test,type='response')
+glm.pred1=rep('Down',104)
+glm.pred1[glm.prob1>0.5]='Up'
+table(glm.pred1,test[,"Direction"])
+mean(glm.pred1==test[,"Direction"])
+```
+overall fraction of correct predictions for the held out data is $0.625$.
+
+#### (e)
+```{r echo=TRUE ,fig.width=8,fig.height=8}
+library(dplyr)
+library(MASS)
+lda.fit=lda(Direction~Lag2,train)
+lda.pred=predict(lda.fit,test)
+lda.class=lda.pred$class
+table(lda.class,test[,"Direction"])
+mean(lda.class==test[,"Direction"])
+```
+overall fraction of correct predictions for the held out data is $65/104\approx0.625$.
+
+#### (f)
+```{r echo=TRUE ,fig.width=8,fig.height=8}
+qda.fit=qda(Direction~Lag2,train)
+qda.pred=predict(qda.fit,test)
+qda.class=qda.pred$class
+table(qda.class,test[,"Direction"])
+mean(qda.class==test[,"Direction"])
+```
+overall fraction of correct predictions for the held out data is $61/104\approx0.59$.
+
+#### (g)
+```{r echo=TRUE ,fig.width=8,fig.height=8}
+library(class)
+train.x=as.matrix(train$Lag2)
+test.x=as.matrix(test$Lag2)
+train.y=train$Direction
+set.seed(1)
+knn.pred=knn(train.x,test.x,train.y,k=1)
+table(knn.pred,test$Direction)
+mean(knn.pred==test[,"Direction"])
+```
+overall fraction of correct predictions for the held out data is $0.5$.
+
+#### (h)
+Logistic regression and LDA provide the best results.
+
+#### (i)
+Here we conduct experiments with KNN.
+```{r echo=TRUE ,fig.width=8,fig.height=8}
+k=c(1,3,5,10,15,20,30)
+rate=rep(0,7)
+a=1
+for(i in k){
+  knn.pred=knn(train.x,test.x,train.y,k=i)
+  table(knn.pred,test$Direction)
+  rate[a]=mean(knn.pred==test[,"Direction"])
+  a=a+1
+}
+rate
+```
+When k value is between 10 to 30, we can most likely obtain the best results.
+ 
+### Q11
+#### (a)
+```{r echo=TRUE ,fig.width=8,fig.height=8}
+med=median(Auto$mpg)
+mpg01=rep(0,dim(Auto)[1])
+mpg01[Auto$mpg>=med]=1
+new_Auto=data.frame(Auto,mpg01)
+```
+
+#### (b)
+```{r echo=TRUE ,fig.width=8,fig.height=8}
+pairs(new_Auto)
+```
+mpg weight horsepower acceleration displacement are most likely useful in predicting mpg01
+
+#### (C)
+```{r echo=TRUE ,fig.width=8,fig.height=8}
+set.seed(1)
+tr <- sample(1:nrow(new_Auto), nrow(new_Auto)*0.7 , replace=F)  # 70% train, 30% test
+train <- new_Auto[tr,]
+test <- new_Auto[-tr,]
+```
+
+#### (d)
+```{r echo=TRUE ,fig.width=8,fig.height=8}
+lda.fit=lda(mpg01~mpg+weight+horsepower+acceleration+displacement,train)
+lda.pred=predict(lda.fit,test)
+lda.class=lda.pred$class
+table(lda.class,test$mpg01)
+```
+Test error rate is 0
+
+#### (e)
+```{r echo=TRUE ,fig.width=8,fig.height=8}
+qda.fit=qda(mpg01~mpg+weight+horsepower+acceleration+displacement,train)
+qda.pred=predict(qda.fit,test)
+qda.class=qda.pred$class
+table(qda.class,test$mpg01)
+mean(qda.class==test$mpg01)
+```
+Test error rate is about 0.03.
+
+#### (f)
+```{r echo=TRUE ,fig.width=8,fig.height=8}
+glm.fit=glm(mpg01~mpg+weight+horsepower+acceleration+displacement,train,family=binomial)
+glm.prob=predict(glm.fit,test,type='response')
+glm.pred=rep(0,93)
+glm.pred[glm.prob>0.5]=1
+table(glm.pred,test$mpg01)
+```
+Test error rate is about 0
+
+#### (g)
+```{r echo=TRUE ,fig.width=8,fig.height=8}
+library(class)
+train.x=dplyr::select(train,mpg,weight,horsepower,acceleration,displacement)
+train.y=dplyr::select(train,mpg01)[,1]
+test.x=dplyr::select(test,mpg,weight,horsepower,acceleration,displacement)
+test.y=dplyr::select(test,mpg01)[,1]
+min_error_rate=1000
+k=0
+for (i in 1:200){
+ knn.pred=knn(train.x,test.x,train.y,i)
+ t=table(knn.pred,test$mpg01)
+ error_rate=(t[2]+t[3])/sum(a)
+ if(error_rate<min_error_rate){
+   min_error_rate=error_rate
+   k=i
+ }
+}
+c(min_error_rate,k)
+##There may be multiple functions with the same name in multiple packages. The double colon operator allows you to specify the specific function you want:
+```
+KNN performs best around 29.
+
+### Q12
+#### (a)
+```{r echo=TRUE ,fig.width=8,fig.height=8}
+Power<-function(){
+  print(2^3)
+}
+```
+
+#### (b)
+```{r echo=TRUE ,fig.width=8,fig.height=8}
+Power2<-function(x,a){
+  print(x^a)
+}
+Power2(3,8)
+```
+
+#### (c)
+```{r echo=TRUE ,fig.width=8,fig.height=8}
+a<-data.frame(c(3,8),c(8,17),c(131,3))
+for(i in 1:3){
+  Power2(a[1,i],a[2,i])
+}
+```
+
+#### (d)
+```{r echo=TRUE ,fig.width=8,fig.height=8}
+Power3<-function(x,a){
+  result=x^a
+  return(result)
+}
+```
+
+#### (e)
+```{r echo=TRUE ,fig.width=8,fig.height=8}
+x=1:10
+y=rep(0,10)
+for(i in 1:10){
+  y[i]=Power3(i,2)
+}
+plot(x,y,log='x')
+plot(x,y,log='y')
+plot(x,y,log='xy')
+```
+
+#### (f)
+```{r echo=TRUE ,fig.width=8,fig.height=8}
+PlotPower<-function(x,a){
+  y=rep(0,length(x))
+  for(i in 1:10){
+    y[i]=Power3(x[i],a)
+  }
+  plot(x,y)
+}
+PlotPower(1:10,3)
+```
+
+### Q13

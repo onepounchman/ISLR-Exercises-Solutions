@@ -1,11 +1,15 @@
 ---
+title: "Exercise 2"
+author: "wenbo"
 output:
-  html_document: default
-  pdf_document: default
+    html_document: default
+    pdf_document: default
 ---
-# Chapter 2 Exercise
+
 ***
 ## Conceptual
+***
+
 ### Q1 
 #### (a) 
 A flexible statistical learning method will perform **better**. 

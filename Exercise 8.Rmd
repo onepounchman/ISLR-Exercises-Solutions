@@ -1,0 +1,158 @@
+---
+title: "Exercise 8"
+author: "wenbo"
+output: html_document
+---
+***
+## Conceptual
+***
+
+
+
+>Q1 
+
+```{r}
+set.seed(1)
+error = 0.7*rnorm(100)
+x1 = rnorm(100, mean = -1.5, sd = 0.7)
+x2 = rnorm(100, mean = 0.8, sd = 1.5)
+beta0 = 1.6; beta1 = 0.8; beta2 = 1.7
+y = beta0 + beta1*x1 + beta2*x2 + error
+plot(x1, y, col = "darkgrey")
+plot(x2, y, col = "darkgrey")
+plot(x1, x2, col = "darkgrey")
+```
+
+```{r fig.width=7, fig.height=6}
+library(tree)
+sim.tree = tree(y~., data = data.frame(x1 = x1, x2 = x2, y = y))
+summary(sim.tree)
+plot(sim.tree)
+text(sim.tree, pretty = 0)
+sim.tree
+```
+
+
+>Q2
+
+Boosting with d=1 is actually a additive model, because $\hat f(x)=\sum_{b=1}^B\lambda\hat{f^b}(x)$, for every generated tree $\hat{f^b}(x)$, it must be quivalent to one $f_j(x_j)$. Therefore $\hat f(x)=\lambda\sum_{b=1}^B\hat{f^b}(x)$ is a weighted version of additive model.
+
+>Q3
+
+Classification Error:$E=1-\max\limits_k\hat{p}_{mk}$
+
+Gini Index: $G=\sum_{k=1}^K\hat{p}_{mk}(1-\hat{p}_{mk})$
+
+Cross-entropy: $D=-\sum_{k=1}^K\hat{p}_{mk}\log{\hat{p}_{mk}}$
+
+```{r fig.width=7, fig.height=6}
+pm1=seq(0,1,0.1)
+pm2=1-pm1
+class=1-apply(cbind(pm1, pm2), 1, max)
+gini=2*pm1*(1-pm1)
+entropy = -pm1*log(pm1)-pm2*log(pm2)
+matplot(pm1,cbind(class, gini, entropy),type='l',col = 2:4)
+legend("topleft", c("Classification error", "Gini index", "Cross entropy"), col = 2:4 ,lty = 1)
+``` 
+
+>Q5
+
+For majority vote: red
+
+For average probability: $\frac{0.1+0.15+0.2+0.2+0.55+0.6+0.6+0.65+0.7+0.75}{10}=0.45$, green.
+
+>Q6
+
+1.Build a tree. Firstly, we tale recursive binary splitting. In each splitting step, this approach select the predictor and the cutpoint such that splitting the predictor space into two regions leads to the greatest reduction in RSS.
+
+That is for any j and s, we define the pair of half place $R_1(j,s)={X|X_j<s}$ and $R_2(j,s)={X|X_J>=s}$, and we seek the value of j and s that minimize the equation $\sum\limits_{i:x_i\in R_1(j,s)}(y_i-\hat{y}_{R_1})^2+\sum\limits_{i:x_i\in R_2(j,s)}(y_i-\hat{y}_{R_2})^2$. This process will be repeated until a stopping criterion is reached.
+
+2. Tree Pruning. Apply cost complexity pruning (aka weakest link pruning) to the large tree in order to obtain a sequence of best subtrees, as a function of $\alpha$. For each value of $\alpha$ there corresponds a subtree $T \in T_0$ such that $\sum\limits_{m=1}^{|T|}\sum\limits_{x_i\in R_m}(y_i-\hat y_{R_m})^2+\alpha|T|$ is as small as possible.
+
+3 use k-fold cross-validation to choose $\alpha$. For each k, repeat step (1) and (2) on all but the kk th fold of the training data while evaluate the mean squared prediction error on the held-out k th fold as a function of $\alpha$. Afterwards, average the results for each $\alpha$ and pick the best $\alpha$ which minimizes the average error.
+
+4.Return subtree with best $\alpha$. Generate and return the subtree with step (2), provided the best $\alpha$.
+ 
+>Q7
+
+```{r fig.width=7, fig.height=6}
+library(MASS)
+library(randomForest)
+set.seed(1)
+train = sample(1:nrow(Boston), nrow(Boston)*7/10)
+y=Boston[-train,'medv']
+p=ncol(Boston)-1
+mt=c(p,p/2,sqrt(p))
+ntr=seq(1,500,5)
+error=matrix(NA,length(mt),length(ntr))
+
+for(i in 1:length(mt)){
+  for(j in 1:length(ntr)){
+    random.boston=randomForest(medv~.,data=Boston,subset=train,mtry=mt[i],ntree=ntr[j])
+    y_pred=predict(random.boston,newdata=Boston[-train,])
+    error[i,j]=mean((y_pred-y)^2)
+  }
+}
+matplot(ntr,t(error),type = "l",col = 2:4, xlab = "Number of Trees", ylab = "Test MSE")
+legend("topright", expression("m = p(bagging)", "m = p/2", "m = "*sqrt(p)), col = 2:4, lty = 1)
+``` 
+
+>Q8
+
+### (a)
+```{r fig.width=7, fig.height=6}
+library(ISLR)
+train=sample(1:nrow(Carseats),nrow(Carseats)*7/10)
+y.test=Carseats[-train,'Sales']
+``` 
+
+### (b)
+```{r fig.width=10, fig.height=10}
+tree.car=tree(Sales~.,Carseats,subset=train)
+plot(tree.car)
+text(tree.car,pretty = 0)
+yhat=predict(tree.car,newdata=Carseats[-train,])
+mean((yhat-y.test)^2)
+``` 
+
+### (c)
+```{r fig.width=10, fig.height=10}
+cv.car=cv.tree(tree.car)
+plot(cv.car$size,cv.car$dev,type='b')
+index=cv.car$size[which.min(cv.car$dev)]
+prune.car = prune.tree(tree.car, best = index)
+plot(prune.car)
+text(prune.car, pretty = 0)
+tree.pred = predict(prune.car, Carseats[-train,])
+mean((tree.pred - y.test)^2)
+``` 
+As shown above, pruning the tree doesn¡¯t improve the test MSE.
+
+### (d)
+```{r fig.width=7, fig.height=6}
+bag.car=randomForest(Sales~.,data=Carseats,subset=train,mtry=11,importance=TRUE)
+yhat.bag=predict(bag.car,Carseats[-train,])
+mean((yhat.bag-y.test)^2)
+importance(bag.car)
+``` 
+
+### (e)
+```{r fig.width=7, fig.height=6}
+random.car=randomForest(Sales~.,data=Carseats,subset=train,mtry=sqrt(ncol(Carseats)-1),ntree = 500)
+yhat.bag=predict(random.car,Carseats[-train,])
+mean((yhat.bag-y.test)^2)
+importance(bag.car)
+varImpPlot(random.car)
+``` 
+
+```{r fig.width=7, fig.height=6}
+p = ncol(Carseats) - 1 
+errors = c()
+for ( d in seq(1, p) ) {
+  rf.carseats = randomForest(Sales~., data = Carseats, subset = train, mtry = d, ntree = 50)
+  rf.pred = predict(rf.carseats, Carseats[-train,])
+  errors[d] = mean((rf.pred - y.test)^2)
+}
+plot(errors, col = "red", type = "b", lwd = 2, xlab = "m", ylab = "Test MSE")
+``` 
+
